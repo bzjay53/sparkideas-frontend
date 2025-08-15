@@ -1,0 +1,55 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Linear Design System Variables */
+:root {
+  /* IdeaSpark Brand Colors */
+  --linear-primary: #6366f1;
+  --linear-primary-hover: #4f46e5;
+  --linear-secondary: #8b5cf6;
+  --linear-accent: #06b6d4;
+  
+  /* Neutral Palette */
+  --linear-gray-50: #f8fafc;
+  --linear-gray-100: #f1f5f9;
+  --linear-gray-200: #e2e8f0;
+  --linear-gray-300: #cbd5e1;
+  --linear-gray-400: #94a3b8;
+  --linear-gray-500: #64748b;
+  --linear-gray-600: #475569;
+  --linear-gray-700: #334155;
+  --linear-gray-800: #1e293b;
+  --linear-gray-900: #0f172a;
+  
+  /* Typography */
+  --linear-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Spacing */
+  --linear-space-1: 0.25rem;
+  --linear-space-2: 0.5rem;
+  --linear-space-3: 0.75rem;
+  --linear-space-4: 1rem;
+  --linear-space-6: 1.5rem;
+  --linear-space-8: 2rem;
+  
+  /* Border Radius */
+  --linear-radius-sm: 0.25rem;
+  --linear-radius: 0.375rem;
+  --linear-radius-lg: 0.5rem;
+  
+  /* Shadows */
+  --linear-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --linear-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --linear-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* IdeaSpark 전용 테마 */
+.ideaspark-theme {
+  --linear-primary: #6366f1;
+  --linear-brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+body {
+  font-family: var(--linear-font-family);
+}

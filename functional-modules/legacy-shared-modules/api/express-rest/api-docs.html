@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Express REST API Module - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin: 0 5px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .method.get { background: #28a745; }
+        .method.post { background: #007bff; }
+        .method.put { background: #ffc107; color: #333; }
+        .method.delete { background: #dc3545; }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .demo-section {
+            grid-column: 1 / -1;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .result-area {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 200px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow: auto;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Express REST API Module</h1>
+            <p>IdeaSpark 패턴 기반 재사용 가능한 REST API 모듈</p>
+            <div style="margin-top: 15px;">
+                <span class="badge">✅ Mock-Free</span>
+                <span class="badge">🔄 Auto-Generated</span>
+                <span class="badge">📚 Self-Documenting</span>
+                <span class="badge">🎯 CRUD Ready</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="card">
+                <h2>📋 CRUD 엔드포인트</h2>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/api/{resource}</strong>
+                    <p>리소스 목록 조회 (페이지네이션 포함)</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/api/{resource}/{id}</strong>
+                    <p>특정 리소스 조회</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <strong>/api/{resource}</strong>
+                    <p>새로운 리소스 생성</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method put">PUT</span>
+                    <strong>/api/{resource}/{id}</strong>
+                    <p>리소스 수정</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method delete">DELETE</span>
+                    <strong>/api/{resource}/{id}</strong>
+                    <p>리소스 삭제</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔐 인증 엔드포인트</h2>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <strong>/api/auth/register</strong>
+                    <p>사용자 회원가입</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <strong>/api/auth/login</strong>
+                    <p>사용자 로그인</p>
+                </div>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <strong>/api/auth/profile</strong>
+                    <p>사용자 프로필 조회</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card demo-section">
+            <h2>🧪 실시간 API 테스트</h2>
+            <p>아래 버튼을 클릭하여 실제 API 동작을 테스트해보세요.</p>
+            
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="testAPI('GET', '/api/ideas')">💡 Ideas 조회</button>
+                <button class="demo-btn" onclick="testAPI('POST', '/api/ideas', {title: 'Test Idea', description: 'Demo'})">➕ Idea 생성</button>
+                <button class="demo-btn" onclick="testAPI('GET', '/api/categories')">📂 Categories 조회</button>
+                <button class="demo-btn" onclick="testAPI('POST', '/api/auth/login', {email: 'test@example.com', password: 'test123'})">🔐 로그인 테스트</button>
+                <button class="demo-btn" onclick="generateSwagger()">📚 Swagger 문서 생성</button>
+                <button class="demo-btn" onclick="showUsageExample()">💻 사용법 예시</button>
+            </div>
+            
+            <div class="result-area" id="result">
+여기에 API 테스트 결과가 표시됩니다.
+
+💡 팁: 버튼을 클릭하여 실제 API 호출을 시뮬레이션해보세요.
+            </div>
+        </div>
+        
+        <div class="card demo-section">
+            <h2>✨ 주요 기능</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>자동 CRUD 생성</h3>
+                    <p>테이블명만 지정하면 완전한 REST API 자동 생성</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Mock-Free 보장</h3>
+                    <p>실제 데이터베이스 연결 필수, 가짜 데이터 없음</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>자동 페이지네이션</h3>
+                    <p>GET 요청에 자동으로 페이지네이션 적용</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>JWT 인증</h3>
+                    <p>IdeaSpark 패턴 기반 JWT 인증 시스템</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>자동 문서화</h3>
+                    <p>Swagger 문서 자동 생성</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>고성능 에러 핸들링</h3>
+                    <p>PostgreSQL 에러 코드 기반 정확한 응답</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card demo-section">
+            <h2>📖 사용법</h2>
+            <div class="code-block">
+const { RestAPIModule } = require('./shared-modules/api/express-rest');
+const express = require('express');
+
+const app = express();
+app.use(express.json());
+
+// 1. API 모듈 생성
+const api = new RestAPIModule()
+    .setDatabaseClient(dbClient)
+    .createCRUDRoutes('ideas')
+    .createCRUDRoutes('categories')
+    .createAuthRoutes();
+
+// 2. Express에 적용
+app.use('/api', api.getRouter());
+
+// 3. 서버 시작
+app.listen(3000, () => {
+    console.log('API Server running on port 3000');
+});
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mockData = {
+            ideas: [
+                { id: 1, title: 'AI 기반 쇼핑몰', description: 'AI 추천 시스템을 활용한 개인화 쇼핑몰', created_at: '2024-01-01' },
+                { id: 2, title: '스마트 헬스케어', description: '웨어러블과 연동되는 건강 관리 앱', created_at: '2024-01-02' }
+            ],
+            categories: [
+                { id: 1, name: 'Technology', description: '기술 관련 아이디어' },
+                { id: 2, name: 'Healthcare', description: '헬스케어 관련 아이디어' }
+            ]
+        };
+
+        async function testAPI(method, endpoint, data = null) {
+            const resultArea = document.getElementById('result');
+            resultArea.textContent = `🔄 ${method} ${endpoint} 요청 중...`;
+
+            try {
+                // 실제 환경에서는 fetch를 사용
+                // const response = await fetch(endpoint, { method, body: JSON.stringify(data) });
+                
+                // 데모를 위한 시뮬레이션
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                let result;
+                if (endpoint.includes('/ideas')) {
+                    result = method === 'GET' ? 
+                        { success: true, data: mockData.ideas, pagination: { page: 1, limit: 10, total: 2 } } :
+                        { success: true, data: { id: 3, ...data }, message: 'Idea created successfully' };
+                } else if (endpoint.includes('/categories')) {
+                    result = { success: true, data: mockData.categories };
+                } else if (endpoint.includes('/auth/login')) {
+                    result = { 
+                        success: true, 
+                        data: { 
+                            user: { id: 1, email: data.email, username: 'testuser' },
+                            token: 'jwt_token_here'
+                        },
+                        message: 'Login successful'
+                    };
+                }
+
+                resultArea.textContent = `✅ ${method} ${endpoint}\n\n` + JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultArea.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+
+        function generateSwagger() {
+            const resultArea = document.getElementById('result');
+            const swagger = {
+                openapi: '3.0.0',
+                info: {
+                    title: 'Generated REST API',
+                    version: '1.0.0',
+                    description: 'Auto-generated from IdeaSpark patterns'
+                },
+                paths: {
+                    '/api/ideas': {
+                        get: {
+                            summary: 'Get ideas list',
+                            parameters: [
+                                { name: 'page', in: 'query', schema: { type: 'integer' } },
+                                { name: 'limit', in: 'query', schema: { type: 'integer' } }
+                            ],
+                            responses: { 200: { description: 'Success' } }
+                        },
+                        post: {
+                            summary: 'Create new idea',
+                            requestBody: {
+                                content: {
+                                    'application/json': {
+                                        schema: {
+                                            type: 'object',
+                                            properties: {
+                                                title: { type: 'string' },
+                                                description: { type: 'string' }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            responses: { 201: { description: 'Created' } }
+                        }
+                    }
+                }
+            };
+            
+            resultArea.textContent = '📚 Swagger 문서 생성 완료!\n\n' + JSON.stringify(swagger, null, 2);
+        }
+
+        function showUsageExample() {
+            const resultArea = document.getElementById('result');
+            const example = `💻 Express REST API Module 사용법
+
+// 1. 모듈 import
+const { RestAPIModule } = require('./shared-modules/api/express-rest');
+
+// 2. API 생성 및 설정
+const api = new RestAPIModule()
+    .setDatabaseClient(dbClient)
+    .createCRUDRoutes('ideas', {
+        middleware: [authMiddleware],
+        customRoutes: {
+            'GET /trending': async (req, res) => {
+                // 트렌딩 로직
+            }
+        }
+    })
+    .createAuthRoutes({
+        userTable: 'users',
+        jwtSecret: process.env.JWT_SECRET
+    });
+
+// 3. Express 앱에 적용
+app.use('/api', api.getRouter());
+
+// 4. 생성된 엔드포인트
+// GET    /api/ideas          - 아이디어 목록
+// GET    /api/ideas/:id      - 특정 아이디어
+// POST   /api/ideas          - 아이디어 생성
+// PUT    /api/ideas/:id      - 아이디어 수정
+// DELETE /api/ideas/:id      - 아이디어 삭제
+// POST   /api/auth/login     - 로그인
+// POST   /api/auth/register  - 회원가입
+
+✨ 특징:
+- Mock 데이터 없음 (100% 실제 DB 연동)
+- 자동 페이지네이션
+- JWT 인증
+- 에러 핸들링
+- Swagger 문서 자동 생성`;
+            
+            resultArea.textContent = example;
+        }
+
+        // 초기 메시지 표시
+        document.addEventListener('DOMContentLoaded', () => {
+            showUsageExample();
+        });
+    </script>
+</body>
+</html>

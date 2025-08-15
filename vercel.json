@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "name": "ideaspark-mvp",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "JWT_SECRET": "ideaspark-production-secret-2024-secure-key-v1.0",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://xivsqgqtlyvyblygedjih.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpdnNxZ3F0bHl2eWJseWdlZGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyNjMxOTYsImV4cCI6MjA3MDgzOTE5Nn0.q5sx7rJ5robUETNz7VEhXEv5WLe7ZEeyTiQaAL_6fus"
+  },
+  "functions": {
+    "backend/server.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/v1/(.*)",
+      "destination": "/backend/server.js"
+    }
+  ]
+}
