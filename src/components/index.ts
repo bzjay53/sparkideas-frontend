@@ -22,8 +22,6 @@ export type {
 
 export type {
   LinearCardProps,
-  LinearCardHeaderProps, 
-  LinearCardFooterProps,
 } from './molecules/Card/LinearCard';
 
 export type {

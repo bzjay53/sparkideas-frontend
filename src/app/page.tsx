@@ -141,14 +141,16 @@ export default function HomePage() {
       {/* 히어로 섹션 - LinearHero 100% 활용 */}
       <LinearHero
         title="AI로 발굴하는 실시간 비즈니스 기회"
-        subtitle="세상의 갈증포인트를 AI가 분석하여 검증된 비즈니스 아이디어를 자동 생성합니다"
+        description="세상의 갈증포인트를 AI가 분석하여 검증된 비즈니스 아이디어를 자동 생성합니다"
         primaryAction={{
           label: "지금 시작하기",
           href: "/dashboard"
         }}
-        backgroundImage={{ src: "/hero-bg.jpg", alt: "IdeaSpark 히어로 이미지" }}
+        secondaryAction={{
+          label: "데모 보기",
+          href: "/demo"
+        }}
         variant="gradient"
-        className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white"
       />
 
       {/* 통계 섹션 */}

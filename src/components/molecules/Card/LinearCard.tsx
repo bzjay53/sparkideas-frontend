@@ -1,5 +1,4 @@
 import React, { HTMLAttributes, ReactNode } from 'react';
-import './LinearCard.styles.css';
 
 export interface LinearCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'gradient' | 'interactive' | 'image';
@@ -9,132 +8,70 @@ export interface LinearCardProps extends HTMLAttributes<HTMLDivElement> {
   footer?: ReactNode;
   children: ReactNode;
   hoverable?: boolean;
-  image?: {
-    src: string;
-    alt: string;
-    position?: 'top' | 'left' | 'right' | 'background';
-    aspectRatio?: '16:9' | '4:3' | '1:1' | 'auto';
-  };
 }
 
 export const LinearCard: React.FC<LinearCardProps> = ({
   variant = 'default',
   padding = 'md',
-  shadow = 'none',
+  shadow = 'md',
   header,
   footer,
   children,
   hoverable = false,
-  image,
   className = '',
   ...props
 }) => {
-  const baseClass = 'linear-card';
-  const variantClass = `linear-card--${variant}`;
-  const paddingClass = `linear-card--padding-${padding}`;
-  const shadowClass = shadow !== 'none' ? `linear-card--shadow-${shadow}` : '';
-  const hoverableClass = hoverable ? 'linear-card--hoverable' : '';
-  const imagePositionClass = image?.position ? `linear-card--image-${image.position}` : '';
+  const getPaddingClass = () => {
+    switch (padding) {
+      case 'sm': return 'p-4';
+      case 'lg': return 'p-8';
+      default: return 'p-6';
+    }
+  };
+
+  const getShadowClass = () => {
+    switch (shadow) {
+      case 'sm': return 'shadow-sm';
+      case 'md': return 'shadow-md';
+      case 'lg': return 'shadow-lg';
+      default: return '';
+    }
+  };
+
+  const getVariantClass = () => {
+    switch (variant) {
+      case 'gradient': return 'bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200';
+      case 'interactive': return 'bg-white border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50';
+      default: return 'bg-white border border-gray-200';
+    }
+  };
 
   const classes = [
-    baseClass,
-    variantClass,
-    paddingClass,
-    shadowClass,
-    hoverableClass,
-    imagePositionClass,
+    'rounded-lg',
+    getVariantClass(),
+    getPaddingClass(),
+    getShadowClass(),
+    hoverable ? 'transition-all duration-200 hover:shadow-lg cursor-pointer transform hover:-translate-y-1' : 'transition-shadow duration-200',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
-  const renderImage = () => {
-    if (!image) return null;
-
-    const aspectRatioClass = image.aspectRatio ? `linear-card__image--${image.aspectRatio.replace(':', '-')}` : '';
-    
-    return (
-      <div className={`linear-card__image linear-card__image--${image.position || 'top'} ${aspectRatioClass}`}>
-        <img src={image.src} alt={image.alt} />
-        {image.position === 'background' && (
-          <div className="linear-card__image-overlay" />
-        )}
-      </div>
-    );
-  };
-
-  const renderContent = () => (
-    <>
-      {header && <div className="linear-card__header">{header}</div>}
-      <div className="linear-card__content">{children}</div>
-      {footer && <div className="linear-card__footer">{footer}</div>}
-    </>
-  );
-
   return (
     <div className={classes} {...props}>
-      {image?.position === 'background' && renderImage()}
-      {image?.position === 'top' && renderImage()}
-      
-      <div className={`linear-card__body ${image?.position === 'background' ? 'linear-card__body--overlay' : ''}`}>
-        {(image?.position === 'left' || image?.position === 'right') && renderImage()}
-        <div className="linear-card__main">
-          {renderContent()}
+      {header && (
+        <div className="mb-4 pb-4 border-b border-gray-100">
+          {header}
         </div>
+      )}
+      <div className="flex-1">
+        {children}
       </div>
-      
-      {!image && renderContent()}
-    </div>
-  );
-};
-
-// Card Header Component
-export interface LinearCardHeaderProps {
-  title?: string;
-  subtitle?: string;
-  avatar?: ReactNode;
-  actions?: ReactNode;
-  children?: ReactNode;
-}
-
-export const LinearCardHeader: React.FC<LinearCardHeaderProps> = ({
-  title,
-  subtitle,
-  avatar,
-  actions,
-  children,
-}) => {
-  if (children) {
-    return <div className="linear-card-header">{children}</div>;
-  }
-
-  return (
-    <div className="linear-card-header">
-      {avatar && <div className="linear-card-header__avatar">{avatar}</div>}
-      <div className="linear-card-header__content">
-        {title && <h3 className="linear-card-header__title">{title}</h3>}
-        {subtitle && <p className="linear-card-header__subtitle">{subtitle}</p>}
-      </div>
-      {actions && <div className="linear-card-header__actions">{actions}</div>}
-    </div>
-  );
-};
-
-// Card Footer Component
-export interface LinearCardFooterProps {
-  children: ReactNode;
-  justify?: 'start' | 'center' | 'end' | 'between';
-}
-
-export const LinearCardFooter: React.FC<LinearCardFooterProps> = ({
-  children,
-  justify = 'end',
-}) => {
-  const justifyClass = `linear-card-footer--${justify}`;
-
-  return (
-    <div className={`linear-card-footer ${justifyClass}`}>
-      {children}
+      {footer && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          {footer}
+        </div>
+      )}
     </div>
   );
 };

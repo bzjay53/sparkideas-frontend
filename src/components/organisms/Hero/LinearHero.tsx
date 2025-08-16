@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import './LinearHero.styles.css';
 
 export interface LinearHeroProps {
   title: string;
@@ -17,33 +16,11 @@ export interface LinearHeroProps {
     href?: string;
     icon?: ReactNode;
   };
-  media?: {
-    type: 'image' | 'video' | 'component';
-    src?: string;
-    alt?: string;
-    component?: ReactNode;
-    autoPlay?: boolean;
-    loop?: boolean;
-    muted?: boolean;
-  };
-  variant?: 'default' | 'centered' | 'split' | 'minimal' | 'gradient';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
   backgroundImage?: {
     src: string;
-    alt?: string;
-    overlay?: boolean;
-    parallax?: boolean;
+    alt: string;
   };
-  badge?: {
-    text: string;
-    variant?: 'default' | 'success' | 'warning' | 'info';
-    icon?: ReactNode;
-  };
-  features?: Array<{
-    icon: ReactNode;
-    title: string;
-    description: string;
-  }>;
+  variant?: 'default' | 'gradient' | 'centered';
   className?: string;
 }
 
@@ -53,165 +30,84 @@ export const LinearHero: React.FC<LinearHeroProps> = ({
   description,
   primaryAction,
   secondaryAction,
-  media,
-  variant = 'default',
-  size = 'lg',
   backgroundImage,
-  badge,
-  features = [],
-  className = ''
+  variant = 'default',
+  className = '',
 }) => {
-  const baseClass = 'linear-hero';
-  const variantClass = `linear-hero--${variant}`;
-  const sizeClass = `linear-hero--${size}`;
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'gradient':
+        return 'bg-gradient-to-r from-blue-600 to-purple-600 text-white';
+      case 'centered':
+        return 'bg-gray-50 text-center';
+      default:
+        return 'bg-white';
+    }
+  };
 
-  const classes = [
-    baseClass,
-    variantClass,
-    sizeClass,
-    backgroundImage && 'linear-hero--with-bg',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const renderAction = (action: { label: string; onClick?: () => void; href?: string; icon?: ReactNode }, isPrimary = true) => {
+    const buttonClasses = isPrimary
+      ? 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors'
+      : 'inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-colors';
 
-  const renderAction = (action: typeof primaryAction, isPrimary = false) => {
-    if (!action) return null;
+    if (action.href) {
+      return (
+        <a href={action.href} className={buttonClasses}>
+          {action.icon && <span className="mr-2">{action.icon}</span>}
+          {action.label}
+        </a>
+      );
+    }
 
-    const actionClass = `linear-hero__action ${isPrimary ? 'linear-hero__action--primary' : 'linear-hero__action--secondary'}`;
-
-    const content = (
-      <>
-        {action.icon && <span className="linear-hero__action-icon">{action.icon}</span>}
-        <span>{action.label}</span>
-      </>
-    );
-
-    return action.href ? (
-      <a href={action.href} className={actionClass}>
-        {content}
-      </a>
-    ) : (
-      <button className={actionClass} onClick={action.onClick}>
-        {content}
+    return (
+      <button onClick={action.onClick} className={buttonClasses}>
+        {action.icon && <span className="mr-2">{action.icon}</span>}
+        {action.label}
       </button>
     );
   };
 
-  const renderMedia = () => {
-    if (!media) return null;
-
-    const mediaClass = 'linear-hero__media';
-
-    switch (media.type) {
-      case 'image':
-        return (
-          <div className={mediaClass}>
-            <img 
-              src={media.src} 
-              alt={media.alt || ''} 
-              className="linear-hero__media-image"
-            />
-          </div>
-        );
-      
-      case 'video':
-        return (
-          <div className={mediaClass}>
-            <video 
-              src={media.src}
-              className="linear-hero__media-video"
-              autoPlay={media.autoPlay}
-              loop={media.loop}
-              muted={media.muted}
-              playsInline
-            />
-          </div>
-        );
-      
-      case 'component':
-        return (
-          <div className={mediaClass}>
-            {media.component}
-          </div>
-        );
-      
-      default:
-        return null;
-    }
-  };
-
   return (
-    <section className={classes} role="banner">
-      {/* Background Image */}
+    <div className={`relative py-16 sm:py-24 lg:py-32 ${getVariantClasses()} ${className}`}>
       {backgroundImage && (
-        <div className="linear-hero__background">
-          <img 
-            src={backgroundImage.src} 
-            alt={backgroundImage.alt || ''} 
-            className={`linear-hero__background-image ${backgroundImage.parallax ? 'parallax' : ''}`}
+        <div className="absolute inset-0">
+          <img
+            className="w-full h-full object-cover"
+            src={backgroundImage.src}
+            alt={backgroundImage.alt}
           />
-          {backgroundImage.overlay && (
-            <div className="linear-hero__background-overlay" />
-          )}
+          <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
         </div>
       )}
-
-      <div className="linear-hero__container">
-        <div className="linear-hero__content">
-          {/* Badge */}
-          {badge && (
-            <div className={`linear-hero__badge linear-hero__badge--${badge.variant || 'default'}`}>
-              {badge.icon && <span className="linear-hero__badge-icon">{badge.icon}</span>}
-              <span>{badge.text}</span>
-            </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={`max-w-4xl ${variant === 'centered' ? 'mx-auto text-center' : ''}`}>
+          {subtitle && (
+            <p className="text-sm font-medium uppercase tracking-wide text-blue-600 mb-4">
+              {subtitle}
+            </p>
           )}
-
-          {/* Text Content */}
-          <div className="linear-hero__text">
-            {subtitle && (
-              <p className="linear-hero__subtitle">{subtitle}</p>
-            )}
-            
-            <h1 className="linear-hero__title">{title}</h1>
-            
-            {description && (
-              <p className="linear-hero__description">{description}</p>
-            )}
-          </div>
-
-          {/* Actions */}
+          
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl mb-6">
+            {title}
+          </h1>
+          
+          {description && (
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl">
+              {description}
+            </p>
+          )}
+          
           {(primaryAction || secondaryAction) && (
-            <div className="linear-hero__actions">
-              {renderAction(primaryAction, true)}
-              {renderAction(secondaryAction, false)}
-            </div>
-          )}
-
-          {/* Features */}
-          {features.length > 0 && (
-            <div className="linear-hero__features">
-              {features.map((feature, index) => (
-                <div key={index} className="linear-hero__feature">
-                  <div className="linear-hero__feature-icon">
-                    {feature.icon}
-                  </div>
-                  <div className="linear-hero__feature-content">
-                    <h3 className="linear-hero__feature-title">{feature.title}</h3>
-                    <p className="linear-hero__feature-description">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {primaryAction && renderAction(primaryAction, true)}
+              {secondaryAction && renderAction(secondaryAction, false)}
             </div>
           )}
         </div>
-
-        {/* Media */}
-        {variant === 'split' && renderMedia()}
       </div>
-
-      {/* Media for non-split variants */}
-      {variant !== 'split' && renderMedia()}
-    </section>
+    </div>
   );
 };
+
+export default LinearHero;
