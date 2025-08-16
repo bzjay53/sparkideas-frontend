@@ -34,8 +34,76 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      // 백엔드 API가 배포되지 않은 상태에서 즉시 데모 데이터 제공
+      const demoMode = true;
+      
+      if (demoMode) {
+        // 데모 데이터 즉시 제공
+        setPainPoints([
+          {
+            id: '1',
+            title: '온라인 학습 중 집중력 저하 문제',
+            description: '집에서 온라인 수업을 들을 때 TV, 스마트폰 등의 유혹으로 집중하기 어려워하는 학생들이 급증하고 있습니다.',
+            category: '교육',
+            confidence_score: 85,
+            business_potential: 92,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2', 
+            title: '원격 근무 시 업무 효율성 관리',
+            description: '재택근무가 늘어나면서 업무 시간 관리와 팀 협업에 어려움을 겪는 기업들이 증가하고 있습니다.',
+            category: '업무 효율성',
+            confidence_score: 78,
+            business_potential: 88,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            title: '1인 가구 식사 해결의 어려움',
+            description: '혼자 사는 사람들이 매일 식사를 준비하는 것의 번거로움과 영양 불균형 문제를 호소하고 있습니다.',
+            category: '생활편의',
+            confidence_score: 91,
+            business_potential: 85,
+            created_at: new Date().toISOString()
+          }
+        ])
+        
+        setBusinessIdeas([
+          {
+            id: '1',
+            title: 'AI 기반 집중력 향상 앱',
+            description: '온라인 학습 중 스마트폰 사용을 차단하고 집중도를 모니터링하여 보상을 제공하는 AI 앱 서비스',
+            market_size: '중간',
+            implementation_difficulty: '보통',
+            revenue_potential: '높음',
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            title: '원격 팀 협업 플랫폼',
+            description: '원격 근무 팀의 업무 효율성을 높이는 실시간 협업 도구와 생산성 분석 기능을 제공하는 플랫폼',
+            market_size: '높음',
+            implementation_difficulty: '높음',
+            revenue_potential: '매우 높음',
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            title: '1인 가구 맞춤형 밀키트 서비스',
+            description: '1인분 분량의 건강한 밀키트와 영양 관리 앱을 결합한 구독형 식사 솔루션',
+            market_size: '높음',
+            implementation_difficulty: '보통',
+            revenue_potential: '높음',
+            created_at: new Date().toISOString()
+          }
+        ])
+        setLoading(false)
+        return
+      }
+
       try {
-        // 실제 API 호출 (Mock 데이터 0%)
+        // 실제 API 호출 (프로덕션 모드)
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api'
         const [painPointsRes, businessIdeasRes] = await Promise.all([
           fetch(`${apiUrl}/v1/pain-points?limit=6`),
