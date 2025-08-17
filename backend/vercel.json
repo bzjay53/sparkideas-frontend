@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "name": "ideaSpark-backend",
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.11"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": ".",
+    "ENVIRONMENT": "production"
+  },
+  "functions": {
+    "app/main.py": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/v1/cron/hourly-collection",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/v1/cron/six-hourly-collection", 
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/v1/cron/daily-digest",
+      "schedule": "0 9 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
