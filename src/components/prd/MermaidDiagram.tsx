@@ -33,7 +33,7 @@ export default function MermaidDiagram({
   const [error, setError] = useState<string | null>(null);
   const [renderKey, setRenderKey] = useState(0);
 
-  // Enhanced Mermaid renderer with CDN fallback
+  // Optimized Mermaid renderer for Vercel deployment (Context7 best practices)
   useEffect(() => {
     let mounted = true;
     
@@ -41,18 +41,32 @@ export default function MermaidDiagram({
       return new Promise<any>((resolve, reject) => {
         // Check if already loaded
         if (window.mermaid) {
+          console.log('[Mermaid] Already loaded from cache');
           resolve(window.mermaid as any);
           return;
         }
 
+        // Load from Vercel-optimized CDN (Context7 recommendation)
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.9.0/dist/mermaid.min.js';
+        script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        script.type = 'module';
         script.onload = () => {
-          console.log('[Mermaid] CDN loaded successfully');
+          console.log('[Mermaid] CDN ES module loaded successfully');
           resolve(window.mermaid as any);
         };
         script.onerror = () => {
-          reject(new Error('Failed to load Mermaid from CDN'));
+          console.warn('[Mermaid] ES module failed, trying UMD fallback...');
+          // Fallback to UMD version
+          const fallbackScript = document.createElement('script');
+          fallbackScript.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.9.0/dist/mermaid.min.js';
+          fallbackScript.onload = () => {
+            console.log('[Mermaid] UMD fallback loaded successfully');
+            resolve(window.mermaid as any);
+          };
+          fallbackScript.onerror = () => {
+            reject(new Error('Failed to load Mermaid from CDN'));
+          };
+          document.head.appendChild(fallbackScript);
         };
         document.head.appendChild(script);
       });
@@ -68,115 +82,115 @@ export default function MermaidDiagram({
         setIsLoading(true);
         setError(null);
         
-        // Check if we're in browser environment
+        // Ensure client-side only (Vercel static export best practice)
         if (typeof window === 'undefined') {
-          console.log('[Mermaid] Server-side rendering, skipping...');
+          console.log('[Mermaid] Server-side rendering detected, deferring to client...');
           setIsLoading(false);
           return;
         }
 
-        console.log('[Mermaid] Starting render process...');
+        console.log('[Mermaid] Starting client-side render process...');
         
-        // Try CDN first, then fallback to npm package
+        // Use CDN for Vercel compatibility (Context7 recommendation)
         let mermaid: any;
         try {
           mermaid = await loadMermaidFromCDN() as any;
-          console.log('[Mermaid] Using CDN version');
+          console.log('[Mermaid] CDN version loaded successfully');
         } catch (cdnError) {
-          console.log('[Mermaid] CDN failed, trying npm package...');
+          console.log('[Mermaid] CDN failed, attempting dynamic import fallback...');
           try {
             const mermaidModule = await import('mermaid');
             mermaid = mermaidModule.default as any;
-            console.log('[Mermaid] Using npm package version');
+            console.log('[Mermaid] Dynamic import fallback successful');
           } catch (importError) {
-            console.error('[Mermaid] Both CDN and npm failed:', { cdnError, importError });
-            throw new Error('Mermaid 라이브러리를 로드할 수 없습니다');
+            console.error('[Mermaid] All loading methods failed:', { cdnError, importError });
+            throw new Error('Mermaid 라이브러리를 로드할 수 없습니다. 네트워크 연결을 확인해주세요.');
           }
         }
 
-        // Initialize with simpler config
+        // Initialize with Vercel-optimized config (Context7 best practices)
         try {
           (mermaid as any).initialize({
             startOnLoad: false,
             theme: 'default',
-            securityLevel: 'loose',
-            logLevel: 1, // Only errors
+            securityLevel: 'loose', // Required for Vercel deployment
+            logLevel: 1, // Minimal logging for production
+            deterministicIds: true, // For consistent SSG
+            fontFamily: '"Inter", "system-ui", sans-serif',
             flowchart: {
               useMaxWidth: true,
-              htmlLabels: true
+              htmlLabels: true,
+              curve: 'basis'
             },
             sequence: {
-              useMaxWidth: true
+              useMaxWidth: true,
+              diagramMarginX: 50,
+              diagramMarginY: 10
             },
             gantt: {
               useMaxWidth: true
             },
             er: {
               useMaxWidth: true
+            },
+            pie: {
+              useMaxWidth: true
             }
           });
-          console.log('[Mermaid] Initialized successfully');
+          console.log('[Mermaid] Initialized with Vercel-optimized config');
         } catch (initError) {
           console.error('[Mermaid] Initialization failed:', initError);
           throw new Error('Mermaid 초기화에 실패했습니다');
         }
 
         if (!mounted || !diagramRef.current) {
-          console.log('[Mermaid] Component unmounted or ref lost');
+          console.log('[Mermaid] Component unmounted during initialization');
           return;
         }
 
-        // Clear previous content and create container
+        // Clear previous content
         diagramRef.current.innerHTML = '';
         
-        // Generate unique ID
-        const id = `mermaid-${Date.now()}-${renderKey}`;
-        console.log('[Mermaid] Rendering with ID:', id);
-        
-        // Create a temporary div for rendering
-        const tempDiv = document.createElement('div');
-        tempDiv.id = id;
-        tempDiv.innerHTML = code;
-        tempDiv.style.visibility = 'hidden';
-        document.body.appendChild(tempDiv);
+        // Generate deterministic ID for SSG compatibility
+        const id = `mermaid-diagram-${renderKey}-${Date.now()}`;
+        console.log('[Mermaid] Rendering diagram with ID:', id);
         
         try {
-          // Use Mermaid's direct rendering
-          await (mermaid as any).run({
-            nodes: [tempDiv]
-          });
+          // Use modern mermaid.render() API (Context7 best practice)
+          const { svg } = await (mermaid as any).render(id, code);
           
-          console.log('[Mermaid] Rendering completed');
-          
-          if (mounted && diagramRef.current) {
-            // Move the rendered content to our container
-            const renderedSvg = tempDiv.querySelector('svg');
-            if (renderedSvg) {
-              // Clone and insert
-              const clonedSvg = renderedSvg.cloneNode(true) as SVGElement;
-              clonedSvg.removeAttribute('height');
-              clonedSvg.style.width = '100%';
-              clonedSvg.style.height = 'auto';
-              clonedSvg.style.maxWidth = '100%';
-              clonedSvg.style.display = 'block';
-              clonedSvg.style.margin = '0 auto';
+          if (mounted && diagramRef.current && svg) {
+            // Create wrapper div for better styling control
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mermaid-wrapper';
+            wrapper.innerHTML = svg;
+            
+            // Apply Vercel-optimized styling
+            const svgElement = wrapper.querySelector('svg');
+            if (svgElement) {
+              svgElement.removeAttribute('height');
+              svgElement.removeAttribute('width');
+              svgElement.style.width = '100%';
+              svgElement.style.height = 'auto';
+              svgElement.style.maxWidth = '100%';
+              svgElement.style.display = 'block';
+              svgElement.style.margin = '0 auto';
               
-              diagramRef.current.appendChild(clonedSvg);
-              console.log('[Mermaid] SVG inserted and styled');
-              setIsLoading(false);
-            } else {
-              throw new Error('렌더링된 SVG를 찾을 수 없습니다');
+              // Add responsive scaling for mobile
+              svgElement.style.maxHeight = '80vh';
+              svgElement.style.objectFit = 'contain';
             }
+            
+            diagramRef.current.appendChild(wrapper);
+            console.log('[Mermaid] SVG rendered and styled successfully');
+            setIsLoading(false);
+          } else {
+            throw new Error('SVG 렌더링 결과가 비어있습니다');
           }
         } catch (renderError) {
           console.error('[Mermaid] Rendering failed:', renderError);
           const errorMessage = renderError instanceof Error ? renderError.message : 'Unknown rendering error';
           throw new Error(`다이어그램 렌더링에 실패했습니다: ${errorMessage}`);
-        } finally {
-          // Clean up temp div
-          if (document.body.contains(tempDiv)) {
-            document.body.removeChild(tempDiv);
-          }
         }
       } catch (err) {
         if (mounted) {
@@ -188,8 +202,8 @@ export default function MermaidDiagram({
       }
     };
 
-    // Add delay to ensure DOM is ready
-    const timer = setTimeout(renderMermaid, 300);
+    // Optimize rendering timing for Vercel
+    const timer = setTimeout(renderMermaid, 100);
     
     return () => {
       mounted = false;

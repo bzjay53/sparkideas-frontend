@@ -129,7 +129,41 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Global styles for Mermaid diagrams */
+/* Mermaid diagram optimizations for Vercel deployment (Context7 best practices) */
+.mermaid-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 200px;
+  padding: 1rem;
+  background: var(--color-background-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.mermaid-wrapper svg {
+  max-width: 100%;
+  height: auto;
+  font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+  background: transparent;
+}
+
+/* Responsive Mermaid diagrams for mobile */
+@media (max-width: 768px) {
+  .mermaid-wrapper {
+    padding: 0.5rem;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  
+  .mermaid-wrapper svg {
+    min-width: 600px;
+    max-height: 60vh;
+  }
+}
+
+/* Global styles for Mermaid diagrams (legacy support) */
 .mermaid-container svg {
   max-width: 100%;
   height: auto;

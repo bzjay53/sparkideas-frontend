@@ -10,7 +10,17 @@ import type { EnvironmentConfig, FeatureFlags } from '@/types';
 // ============================================================================
 
 function getEnvVar(key: string, defaultValue?: string): string {
-  const value = process.env[key];
+  // First try process.env (build time)
+  let value = process.env[key];
+  
+  // For client-side, try window.location for deployment URL detection
+  if (!value && typeof window !== 'undefined' && key === 'NEXT_PUBLIC_API_BASE_URL') {
+    const hostname = window.location.hostname;
+    if (hostname.includes('vercel.app') || hostname.includes('ideaspark')) {
+      value = `https://${hostname}/api`;
+      console.log(`[Config] Auto-detected API URL from hostname: ${value}`);
+    }
+  }
   
   if (!value && !defaultValue) {
     console.warn(`Environment variable ${key} is not defined`);
@@ -47,8 +57,22 @@ const featureFlags: FeatureFlags = {
 // ============================================================================
 
 const config: EnvironmentConfig = {
-  // API Configuration
-  apiBaseUrl: getEnvVar('NEXT_PUBLIC_API_BASE_URL', 'http://localhost:8000'),
+  // API Configuration (smart environment-based URL)
+  apiBaseUrl: (() => {
+    const explicitUrl = getEnvVar('NEXT_PUBLIC_API_BASE_URL');
+    const vercelUrl = getEnvVar('VERCEL_URL');
+    
+    // If explicit URL is set, use it
+    if (explicitUrl) return explicitUrl;
+    
+    // If on Vercel, construct API URL from Vercel URL
+    if (vercelUrl) {
+      return `https://${vercelUrl}/api`;
+    }
+    
+    // Fallback to localhost for local development
+    return 'http://localhost:8000';
+  })(),
   
   // Supabase Configuration
   supabaseUrl: getEnvVar('NEXT_PUBLIC_SUPABASE_URL', 'https://your-project.supabase.co'),
@@ -57,8 +81,26 @@ const config: EnvironmentConfig = {
   // Deployment Configuration
   vercelUrl: getEnvVar('NEXT_PUBLIC_VERCEL_URL', 'https://ideaSpark-frontend.vercel.app'),
   
-  // Environment Detection
-  environment: (getEnvVar('NEXT_PUBLIC_ENVIRONMENT', 'development') as 'development' | 'staging' | 'production'),
+  // Environment Detection (with smart Vercel deployment detection)
+  environment: (() => {
+    const explicitEnv = getEnvVar('NEXT_PUBLIC_ENVIRONMENT');
+    const vercelEnv = getEnvVar('VERCEL_ENV');
+    const nodeEnv = getEnvVar('NODE_ENV');
+    const vercelUrl = getEnvVar('VERCEL_URL');
+    
+    // If we're on Vercel (has VERCEL_URL), default to production unless explicitly development
+    if (vercelUrl && !explicitEnv) {
+      if (vercelEnv === 'preview') return 'staging';
+      return 'production'; // Default to production on Vercel
+    }
+    
+    // Priority: explicit setting > Vercel env > Node env > development
+    if (explicitEnv) return explicitEnv as 'development' | 'staging' | 'production';
+    if (vercelEnv === 'production') return 'production';
+    if (vercelEnv === 'preview') return 'staging';
+    if (nodeEnv === 'production') return 'production';
+    return 'development';
+  })(),
   
   // Feature Flags
   featureFlags,
@@ -265,27 +307,16 @@ export function getDebugInfo() {
   };
 }
 
-// Log configuration in development
-if (isDevelopment()) {
-  console.group('🔧 IdeaSpark Configuration');
-  console.log('Environment:', config.environment);
-  console.log('API Base URL:', config.apiBaseUrl);
-  console.log('Feature Flags:', featureFlags);
-  
-  const validation = validateConfig();
-  if (!validation.valid) {
-    console.warn('Configuration Errors:', validation.errors);
-  } else {
-    console.log('✅ Configuration valid');
-  }
-  console.groupEnd();
-}
 
 // Log critical configuration for production debugging
 if (isProduction()) {
   console.group('🚀 IdeaSpark Production Configuration');
   console.log('Environment:', config.environment);
   console.log('API Base URL:', config.apiBaseUrl);
+  console.log('Explicit Environment:', process.env.NEXT_PUBLIC_ENVIRONMENT);
+  console.log('Vercel Environment:', process.env.VERCEL_ENV);
+  console.log('Node Environment:', process.env.NODE_ENV);
+  console.log('Current hostname:', typeof window !== 'undefined' ? window.location.hostname : 'server-side');
   
   const validation = validateConfig();
   if (!validation.valid) {
@@ -295,6 +326,26 @@ if (isProduction()) {
   }
   console.groupEnd();
 }
+
+// Log in any environment for debugging (will show in both dev and production)
+console.group(`🔧 IdeaSpark Configuration (${config.environment})`);
+console.log('Environment:', config.environment);
+console.log('API Base URL:', config.apiBaseUrl);
+console.log('Current hostname:', typeof window !== 'undefined' ? window.location.hostname : 'server-side');
+console.log('Environment Variables:');
+console.log('- NEXT_PUBLIC_ENVIRONMENT:', process.env.NEXT_PUBLIC_ENVIRONMENT);
+console.log('- NEXT_PUBLIC_API_BASE_URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
+console.log('- VERCEL_ENV:', process.env.VERCEL_ENV);
+console.log('- VERCEL_URL:', process.env.VERCEL_URL);
+console.log('- NODE_ENV:', process.env.NODE_ENV);
+
+const validation = validateConfig();
+if (!validation.valid) {
+  console.warn('Configuration Errors:', validation.errors);
+} else {
+  console.log('✅ Configuration valid');
+}
+console.groupEnd();
 
 // ============================================================================
 // Exports
