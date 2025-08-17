@@ -38,10 +38,10 @@ export default function MermaidDiagram({
     let mounted = true;
     
     const loadMermaidFromCDN = () => {
-      return new Promise((resolve, reject) => {
+      return new Promise<any>((resolve, reject) => {
         // Check if already loaded
         if (window.mermaid) {
-          resolve(window.mermaid);
+          resolve(window.mermaid as any);
           return;
         }
 
@@ -49,7 +49,7 @@ export default function MermaidDiagram({
         script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.9.0/dist/mermaid.min.js';
         script.onload = () => {
           console.log('[Mermaid] CDN loaded successfully');
-          resolve(window.mermaid);
+          resolve(window.mermaid as any);
         };
         script.onerror = () => {
           reject(new Error('Failed to load Mermaid from CDN'));
@@ -78,15 +78,15 @@ export default function MermaidDiagram({
         console.log('[Mermaid] Starting render process...');
         
         // Try CDN first, then fallback to npm package
-        let mermaid;
+        let mermaid: any;
         try {
-          mermaid = await loadMermaidFromCDN();
+          mermaid = await loadMermaidFromCDN() as any;
           console.log('[Mermaid] Using CDN version');
         } catch (cdnError) {
           console.log('[Mermaid] CDN failed, trying npm package...');
           try {
             const mermaidModule = await import('mermaid');
-            mermaid = mermaidModule.default;
+            mermaid = mermaidModule.default as any;
             console.log('[Mermaid] Using npm package version');
           } catch (importError) {
             console.error('[Mermaid] Both CDN and npm failed:', { cdnError, importError });
@@ -96,7 +96,7 @@ export default function MermaidDiagram({
 
         // Initialize with simpler config
         try {
-          mermaid.initialize({
+          (mermaid as any).initialize({
             startOnLoad: false,
             theme: 'default',
             securityLevel: 'loose',
@@ -142,7 +142,7 @@ export default function MermaidDiagram({
         
         try {
           // Use Mermaid's direct rendering
-          await mermaid.run({
+          await (mermaid as any).run({
             nodes: [tempDiv]
           });
           
