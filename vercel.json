@@ -64,15 +64,7 @@
   ],
   "crons": [
     {
-      "path": "/api/cron/collect-pain-points",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/cron/generate-ideas",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/send-telegram",
+      "path": "/api/cron/daily-tasks",
       "schedule": "0 9 * * *"
     }
   ]
