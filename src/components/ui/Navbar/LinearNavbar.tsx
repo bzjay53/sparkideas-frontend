@@ -128,7 +128,7 @@ export const LinearNavbar: React.FC<LinearNavbarProps> = ({
                 />
               </svg>
             </button>
-            {isDropdownOpen && (
+            {isDropdownOpen && item.children && (
               <ul className="linear-navbar__dropdown-menu">
                 {item.children.map((child, childIndex) => (
                   <li key={`${child.label}-${childIndex}`}>
