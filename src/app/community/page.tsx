@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { LinearCard, LinearButton, LinearInput } from '@/components/ui';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
@@ -215,11 +216,12 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 🌟 개발자 커뮤니티
@@ -441,5 +443,6 @@ export default function CommunityPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
