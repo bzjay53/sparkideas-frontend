@@ -15,6 +15,192 @@ import PRDViewer from '@/components/prd/PRDViewer';
 import MermaidDiagram from '@/components/prd/MermaidDiagram';
 import Logo from '@/components/common/Logo';
 
+// Helper functions for export functionality
+function downloadFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function generateMarkdownContent(prd: any): string {
+  return `# ${prd.title}
+
+**작성일**: ${new Date(prd.created_at).toLocaleDateString('ko-KR')}
+**신뢰도**: ${prd.confidence_score}%
+**템플릿**: ${prd.template_used}
+
+## Executive Summary
+
+${prd.executive_summary}
+
+## 타겟 시장
+
+${prd.target_market}
+
+## 핵심 기능
+
+${prd.features.map((feature: any, index: number) => `
+### ${index + 1}. ${feature.name}
+
+**설명**: ${feature.description}
+**우선순위**: ${feature.priority}
+**작업량**: ${feature.effort}
+${feature.dependencies && feature.dependencies.length > 0 ? `**의존성**: ${feature.dependencies.join(', ')}` : ''}
+`).join('\n')}
+
+## 기술 요구사항
+
+${Object.entries(prd.technical_requirements).map(([category, details]: [string, any]) => `
+### ${category.charAt(0).toUpperCase() + category.slice(1)}
+
+${Object.entries(details).map(([key, value]: [string, any]) => `- **${key}**: ${value}`).join('\n')}
+`).join('\n')}
+
+## 성공 지표
+
+${prd.success_metrics.map((metric: string, index: number) => `${index + 1}. ${metric}`).join('\n')}
+
+## 개발 일정
+
+\`\`\`
+${prd.timeline}
+\`\`\`
+
+## 다이어그램
+
+${prd.diagrams.map((diagram: any, index: number) => `
+### ${diagram.title}
+
+**설명**: ${diagram.description}
+**복잡도**: ${diagram.complexity_score}/10
+
+\`\`\`mermaid
+${diagram.mermaid_code}
+\`\`\`
+`).join('\n')}
+
+---
+*이 문서는 IdeaSpark에서 자동 생성되었습니다.*
+`;
+}
+
+function generateHTMLContent(prd: any): string {
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${prd.title} - PRD</title>
+    <style>
+        body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2563eb; }
+        .header { text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 30px; }
+        .meta { background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .feature { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin: 10px 0; }
+        .priority { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .priority.high { background: #fee2e2; color: #dc2626; }
+        .priority.medium { background: #fef3c7; color: #d97706; }
+        .priority.low { background: #dcfce7; color: #16a34a; }
+        .diagram { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .mermaid { text-align: center; }
+        pre { background: #f1f5f9; padding: 15px; border-radius: 6px; overflow-x: auto; }
+        footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>${prd.title}</h1>
+        <div class="meta">
+            <p><strong>작성일:</strong> ${new Date(prd.created_at).toLocaleDateString('ko-KR')}</p>
+            <p><strong>신뢰도:</strong> ${prd.confidence_score}%</p>
+            <p><strong>템플릿:</strong> ${prd.template_used}</p>
+        </div>
+    </div>
+
+    <h2>Executive Summary</h2>
+    <div>${prd.executive_summary.replace(/\n/g, '<br>')}</div>
+
+    <h2>타겟 시장</h2>
+    <p>${prd.target_market}</p>
+
+    <h2>핵심 기능</h2>
+    ${prd.features.map((feature: any) => `
+    <div class="feature">
+        <h3>${feature.name}</h3>
+        <p>${feature.description}</p>
+        <p><span class="priority ${feature.priority.toLowerCase()}">${feature.priority}</span> 
+           <strong>작업량:</strong> ${feature.effort}</p>
+        ${feature.dependencies && feature.dependencies.length > 0 ? 
+          `<p><strong>의존성:</strong> ${feature.dependencies.join(', ')}</p>` : ''}
+    </div>
+    `).join('')}
+
+    <h2>기술 요구사항</h2>
+    ${Object.entries(prd.technical_requirements).map(([category, details]: [string, any]) => `
+    <h3>${category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+    <ul>
+        ${Object.entries(details).map(([key, value]: [string, any]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}
+    </ul>
+    `).join('')}
+
+    <h2>성공 지표</h2>
+    <ul>
+        ${prd.success_metrics.map((metric: string) => `<li>${metric}</li>`).join('')}
+    </ul>
+
+    <h2>개발 일정</h2>
+    <pre>${prd.timeline}</pre>
+
+    <h2>다이어그램</h2>
+    ${prd.diagrams.map((diagram: any, index: number) => `
+    <div class="diagram">
+        <h3>${diagram.title}</h3>
+        <p>${diagram.description}</p>
+        <p><strong>복잡도:</strong> ${diagram.complexity_score}/10</p>
+        <div class="mermaid">
+            ${diagram.mermaid_code}
+        </div>
+    </div>
+    `).join('')}
+
+    <footer>
+        <p>이 문서는 IdeaSpark에서 자동 생성되었습니다.</p>
+        <p>생성 시간: ${new Date().toLocaleString('ko-KR')}</p>
+    </footer>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>`;
+}
+
+function generatePDFContent(prd: any): string {
+  // PDF는 HTML을 기반으로 생성 (브라우저의 인쇄 기능 활용)
+  const htmlContent = generateHTMLContent(prd);
+  
+  // PDF 최적화를 위한 스타일 수정
+  return htmlContent.replace(
+    '<style>',
+    `<style>
+        @media print {
+            body { margin: 0; }
+            .header { page-break-after: avoid; }
+            .feature { page-break-inside: avoid; }
+            .diagram { page-break-inside: avoid; }
+        }
+        @page { margin: 2cm; }
+    `
+  );
+}
+
 export default function PRDDetailPage() {
   const params = useParams();
   const prdId = params.id as string;
@@ -304,9 +490,31 @@ Phase 4 (2주): 테스트 및 배포
     }, 1000);
   }, [prdId]);
 
-  const handleExport = (format: string) => {
-    // TODO: Implement actual export functionality
-    alert(`${format.toUpperCase()} 다운로드 기능이 곧 제공됩니다!`);
+  const handleExport = async (format: string) => {
+    try {
+      const exportData = {
+        prd,
+        format,
+        timestamp: new Date().toISOString()
+      };
+
+      if (format === 'pdf') {
+        // PDF 다운로드 구현
+        const pdfContent = generatePDFContent(prd);
+        downloadFile(pdfContent, `PRD_${prd.title}_${Date.now()}.pdf`, 'application/pdf');
+      } else if (format === 'markdown') {
+        // Markdown 다운로드 구현
+        const markdownContent = generateMarkdownContent(prd);
+        downloadFile(markdownContent, `PRD_${prd.title}_${Date.now()}.md`, 'text/markdown');
+      } else if (format === 'html') {
+        // HTML 다운로드 구현
+        const htmlContent = generateHTMLContent(prd);
+        downloadFile(htmlContent, `PRD_${prd.title}_${Date.now()}.html`, 'text/html');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   const handleShare = () => {
