@@ -55,6 +55,13 @@ export const LinearCarousel: React.FC<LinearCarouselProps> = ({
         }
       };
     }
+    
+    // Return cleanup function even when autoPlay is false
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [autoPlay, autoPlayInterval, currentIndex, totalItems, itemsPerView]);
 
   const handlePrevious = () => {

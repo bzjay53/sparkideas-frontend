@@ -72,6 +72,9 @@ export const LinearNavbar: React.FC<LinearNavbarProps> = ({
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
+    
+    // Return empty cleanup function when activeDropdown is false
+    return () => {};
   }, [activeDropdown]);
 
   const baseClass = 'linear-navbar';
@@ -127,7 +130,7 @@ export const LinearNavbar: React.FC<LinearNavbarProps> = ({
                 />
               </svg>
             </button>
-            {isDropdownOpen && (
+            {isDropdownOpen && item.children && (
               <ul className="linear-navbar__dropdown-menu">
                 {item.children.map((child, childIndex) => (
                   <li key={`${child.label}-${childIndex}`}>
