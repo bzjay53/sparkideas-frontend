@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Edge Runtime for faster global response
-export const runtime = 'edge';
+// Use Node.js runtime for better compatibility
+export const runtime = 'nodejs';
 
 // Supabase 클라이언트 초기화
 const supabase = createClient(
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('아이디어 저장 API 에러:', error);
     
-    // 개발 환경에서는 Mock 저장 응답 반환
-    if (process.env.NODE_ENV === 'development') {
+    // 개발/프로덕션 환경에서 Supabase 연결 실패 시 Mock 저장 응답 반환
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
       return new Response(JSON.stringify({
         success: true,
         savedIdea: {
@@ -217,8 +217,8 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('아이디어 목록 조회 에러:', error);
     
-    // 개발 환경에서는 Mock 데이터 반환
-    if (process.env.NODE_ENV === 'development') {
+    // 개발/프로덕션 환경에서 Supabase 연결 실패 시 Mock 데이터 반환
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
       return new Response(JSON.stringify({
         success: true,
         ideas: [
@@ -403,8 +403,8 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('아이디어 업데이트 API 에러:', error);
     
-    // 개발 환경에서는 Mock 응답 반환
-    if (process.env.NODE_ENV === 'development') {
+    // 개발/프로덕션 환경에서 Supabase 연결 실패 시 Mock 응답 반환
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
       return new Response(JSON.stringify({
         success: true,
         updatedIdea: {

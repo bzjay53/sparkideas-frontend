@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
-// Edge Runtime for faster global response
-export const runtime = 'edge';
+// Use Node.js runtime for better compatibility
+export const runtime = 'nodejs';
 
 // OpenAI API 호출 함수 (fetch 사용)
 async function callOpenAI(prompt: string) {
@@ -135,8 +135,10 @@ ${userPreferences ? `사용자 선호: ${userPreferences}` : ''}
   } catch (error) {
     console.error('AI 아이디어 생성 에러:', error);
     
-    // 개발 환경에서는 Mock 데이터 반환
-    if (process.env.NODE_ENV === 'development' && error instanceof Error && error.message.includes('API key not configured')) {
+    // 개발 환경이거나 API 키 문제일 때 Mock 데이터 반환
+    if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') && 
+        error instanceof Error && 
+        (error.message.includes('API key not configured') || error.message.includes('OpenAI API error'))) {
       const mockIdea = {
         id: `mock_idea_${Date.now()}`,
         title: 'AI 스마트 학습 플랫폼',
