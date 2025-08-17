@@ -9,6 +9,7 @@ export {
   type LinearCardFooterProps 
 } from './LinearCard';
 export { LinearInput, type LinearInputProps } from './LinearInput';
+export { LinearHero, type LinearHeroProps } from './LinearHero';
 
 // Re-export for convenience
 export { default as Button } from './LinearButton';
