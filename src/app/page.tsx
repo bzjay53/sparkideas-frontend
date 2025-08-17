@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LinearButton, LinearCard, LinearNavbar } from '@/components/ui';
+import { LinearButton, LinearCard } from '@/components/ui';
 import { Suspense } from 'react';
 
 function HeroSection() {
@@ -104,10 +104,35 @@ function StatsSection() {
   );
 }
 
+function SimpleNavbar() {
+  return (
+    <nav className="bg-white border-b shadow-sm">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <Link href="/" className="text-xl font-bold text-blue-600">
+            IdeaSpark v2.0
+          </Link>
+          <div className="flex space-x-4">
+            <Link href="/dashboard" className="text-gray-600 hover:text-blue-600">
+              대시보드
+            </Link>
+            <Link href="/community" className="text-gray-600 hover:text-blue-600">
+              커뮤니티
+            </Link>
+            <Link href="/prd" className="text-gray-600 hover:text-blue-600">
+              PRD 생성
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <LinearNavbar brand="IdeaSpark" />
+      <SimpleNavbar />
       <HeroSection />
       <FeatureCards />
       <StatsSection />

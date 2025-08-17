@@ -34,24 +34,27 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data to match frontend interface
-    const transformedComments = (comments || []).map(comment => ({
-      id: comment.id,
-      content: comment.content,
-      author: {
-        id: comment.users?.id || 'unknown',
-        name: comment.users?.display_name || comment.users?.email?.split('@')[0] || 'Anonymous',
-        avatar: '👤',
-        level: 'Member'
-      },
-      post_id: postId,
-      parent_id: comment.parent_comment_id,
-      likes: 0,
-      replies_count: 0,
-      is_liked: false,
-      is_edited: false,
-      created_at: comment.created_at,
-      replies: []
-    }));
+    const transformedComments = (comments || []).map(comment => {
+      const user = Array.isArray(comment.users) ? comment.users[0] : comment.users;
+      return {
+        id: comment.id,
+        content: comment.content,
+        author: {
+          id: user?.id || 'unknown',
+          name: user?.display_name || user?.email?.split('@')[0] || 'Anonymous',
+          avatar: '👤',
+          level: 'Member'
+        },
+        post_id: postId,
+        parent_id: comment.parent_comment_id,
+        likes: 0,
+        replies_count: 0,
+        is_liked: false,
+        is_edited: false,
+        created_at: comment.created_at,
+        replies: []
+      };
+    });
 
     return NextResponse.json(transformedComments);
   } catch (error) {
@@ -94,12 +97,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
     }
 
+    const user = Array.isArray(comment.users) ? comment.users[0] : comment.users;
     const transformedComment = {
       id: comment.id,
       content: comment.content,
       author: {
-        id: comment.users?.id || 'unknown',
-        name: comment.users?.display_name || comment.users?.email?.split('@')[0] || 'Anonymous',
+        id: user?.id || 'unknown',
+        name: user?.display_name || user?.email?.split('@')[0] || 'Anonymous',
         avatar: '👤',
         level: 'Member'
       },
