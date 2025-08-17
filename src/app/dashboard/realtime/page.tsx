@@ -195,7 +195,7 @@ export default function RealTimeDashboard() {
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Real-time Metrics */}
         <RealTimeMetrics
-          title="🚀 핵심 지표"
+          title="핵심 지표"
           metrics={metrics}
           updateInterval={15000} // 15 seconds
           columns={4}
@@ -300,7 +300,7 @@ export default function RealTimeDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Pain Points */}
           <LinearCard padding="lg" shadow="md">
-            <h3 className="text-lg font-semibold mb-4">🔥 최근 갈증포인트</h3>
+            <h3 className="text-lg font-semibold mb-4">최근 갈증포인트</h3>
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {[1,2,3,4,5].map((item) => (
                 <div key={item} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">

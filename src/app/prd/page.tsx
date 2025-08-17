@@ -5,6 +5,7 @@ import { LinearCard, LinearButton, LinearInput } from '@/components/ui';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { PlusIcon, DocumentTextIcon, ShareIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 
 interface PRD {
   id: string;
@@ -123,10 +124,15 @@ export default function PRDListPage() {
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-6">
+            {/* Logo */}
+            <div className="mb-4">
+              <Logo size="md" />
+            </div>
+            
             <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                📋 PRD 관리
+                PRD 관리
               </h1>
               <p className="text-gray-600 mt-2">
                 자동 생성된 제품 요구사항 문서를 관리하고 다운로드하세요

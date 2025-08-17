@@ -4,6 +4,7 @@ import { AnalyticsService, PainPointService, BusinessIdeaService } from '@/lib/d
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import IdeaGenerator from '@/components/ai/IdeaGenerator';
 import SavedIdeas from '@/components/ai/SavedIdeas';
+import Logo from '@/components/common/Logo';
 
 // ISR: Revalidate every hour
 export const revalidate = 3600;
@@ -91,7 +92,7 @@ async function DashboardContent() {
       {/* Top Ideas and Recent Pain Points */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <LinearCard padding="lg" shadow="md">
-          <h2 className="text-lg font-semibold mb-4">🚀 최고 신뢰도 아이디어</h2>
+          <h2 className="text-lg font-semibold mb-4">최고 신뢰도 아이디어</h2>
           <div className="space-y-3">
             {topIdeas.map((idea) => (
               <div key={idea.id} className="border-l-4 border-accent-primary pl-3">
@@ -115,7 +116,7 @@ async function DashboardContent() {
         </div>
 
         <LinearCard padding="lg" shadow="md">
-          <h2 className="text-lg font-semibold mb-4">🔥 트렌딩 갈증포인트</h2>
+          <h2 className="text-lg font-semibold mb-4">트렌딩 갈증포인트</h2>
           <div className="space-y-3">
             {recentPainPoints.map((point) => (
               <div key={point.id} className="border-l-4 border-orange-400 pl-3">
@@ -137,7 +138,7 @@ async function DashboardContent() {
 
       {/* Quick Actions */}
       <LinearCard padding="lg" shadow="md">
-        <h2 className="text-lg font-semibold mb-4">⚡ 빠른 작업</h2>
+        <h2 className="text-lg font-semibold mb-4">빠른 작업</h2>
         <div className="flex flex-wrap gap-3">
           <LinearButton variant="primary" size="sm">
             새 데이터 수집 시작
@@ -161,8 +162,13 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className="container mx-auto px-4 py-8">
+        {/* Logo */}
+        <div className="mb-6">
+          <Logo size="md" />
+        </div>
+        
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary">📊 IdeaSpark 대시보드</h1>
+          <h1 className="text-3xl font-bold text-text-primary">IdeaSpark 대시보드</h1>
           <p className="text-text-secondary mt-2">
             실시간 갈증포인트 분석 및 비즈니스 아이디어 현황
           </p>

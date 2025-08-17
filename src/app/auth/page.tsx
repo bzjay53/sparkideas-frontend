@@ -42,9 +42,9 @@ export default function AuthPage() {
             setMessage(`로그인 실패: ${error.message}`);
           }
         } else if (data.user) {
-          setMessage('로그인 성공! 대시보드로 이동합니다.');
+          setMessage('로그인 성공! 메인 페이지로 이동합니다.');
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            window.location.href = '/';
           }, 1500);
         }
       } else {

@@ -13,6 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import PRDViewer from '@/components/prd/PRDViewer';
 import MermaidDiagram from '@/components/prd/MermaidDiagram';
+import Logo from '@/components/common/Logo';
 
 export default function PRDDetailPage() {
   const params = useParams();
@@ -349,6 +350,11 @@ Phase 4 (2주): 테스트 및 배포
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-6">
+          {/* Logo */}
+          <div className="mb-4">
+            <Logo size="md" />
+          </div>
+          
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <LinearButton

@@ -26,11 +26,11 @@ export default function AuthCallbackPage() {
         if (data.session) {
           console.log('인증 성공:', data.session.user);
           setStatus('success');
-          setMessage('로그인 성공! 대시보드로 이동합니다...');
+          setMessage('로그인 성공! 메인 페이지로 이동합니다...');
           
-          // 2초 후 대시보드로 리다이렉트
+          // 2초 후 메인 페이지로 리다이렉트
           setTimeout(() => {
-            router.push('/dashboard');
+            router.push('/');
           }, 2000);
         } else {
           setStatus('error');
