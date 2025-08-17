@@ -72,6 +72,20 @@ Mock 데이터:
 
 ## 📝 **추가된 Mock 데이터 기록**
 
+### **2025-08-17 06:15 - 다크테마 시스템 완료**
+```yaml
+위치: 다크테마 시스템 완전 구현 완료
+구현 내용:
+  - ThemeProvider Context 구현 (src/contexts/ThemeContext.tsx)
+  - ThemeToggle 컴포넌트 생성 (src/components/ui/ThemeToggle.tsx) 
+  - Linear Design System CSS 변수 완전 대응
+  - 라이트/다크/시스템 자동 3가지 모드
+  - 로컬스토리지 자동 저장
+  - 네비게이션에 테마 토글 버튼 통합
+
+상태: ✅ 100% 실제 기능 (Mock 없음)
+```
+
 ### **2025-08-17 05:55 - LinearHero Badge**
 ```yaml
 위치: src/app/page.tsx - LinearHero 컴포넌트
