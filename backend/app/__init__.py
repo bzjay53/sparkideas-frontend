@@ -1,1 +1,0 @@
-# IdeaSpark Backend Application

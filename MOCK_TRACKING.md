@@ -72,6 +72,19 @@ Mock 데이터:
 
 ## 📝 **추가된 Mock 데이터 기록**
 
+### **2025-08-17 06:30 - 프로젝트 구조 대정리 완료**
+```yaml
+정리된 항목들:
+  문서 파일: 11개 중복 MD 파일 제거 (CLAUDE.md, README.md, PRD.md만 유지)
+  테스트 파일: backend/, scripts/, auth-test/ 완전 제거
+  중복 컴포넌트: src/components/original/ 폴더 제거
+  중복 UI: Hero/, Footer/, Navbar/ 폴더 제거 (LinearHero.tsx 파일로 통합)
+  불필요 파일: docs/ 내 4개 파일, public/ 내 3개 SVG 파일 제거
+
+결과: 깔끔하고 체계적인 모듈화 구조 완성
+상태: ✅ 100% 정리 완료 (중복성 0%)
+```
+
 ### **2025-08-17 06:15 - 다크테마 시스템 완료**
 ```yaml
 위치: 다크테마 시스템 완전 구현 완료
