@@ -281,6 +281,21 @@ if (isDevelopment()) {
   console.groupEnd();
 }
 
+// Log critical configuration for production debugging
+if (isProduction()) {
+  console.group('🚀 IdeaSpark Production Configuration');
+  console.log('Environment:', config.environment);
+  console.log('API Base URL:', config.apiBaseUrl);
+  
+  const validation = validateConfig();
+  if (!validation.valid) {
+    console.error('❌ Production Configuration Errors:', validation.errors);
+  } else {
+    console.log('✅ Production configuration valid');
+  }
+  console.groupEnd();
+}
+
 // ============================================================================
 // Exports
 // ============================================================================
