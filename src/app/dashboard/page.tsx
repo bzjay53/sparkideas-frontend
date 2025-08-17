@@ -140,7 +140,11 @@ async function DashboardContent() {
       <LinearCard padding="lg" shadow="md">
         <h2 className="text-lg font-semibold mb-4">빠른 작업</h2>
         <div className="flex flex-wrap gap-3">
-          <LinearButton variant="primary" size="sm">
+          <LinearButton 
+            variant="primary" 
+            size="sm" 
+            className="!text-white font-medium"
+          >
             새 데이터 수집 시작
           </LinearButton>
           <LinearButton variant="secondary" size="sm">

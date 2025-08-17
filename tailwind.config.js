@@ -11,9 +11,9 @@ module.exports = {
       colors: {
         // CSS Variables from UI_COMPONENT_ARCHIVE mapped to Tailwind
         accent: {
-          primary: '#3b82f6',      // var(--color-accent-primary)
-          hover: '#2563eb',        // var(--color-accent-hover)
-          light: '#dbeafe',        // var(--color-accent-light)
+          primary: 'var(--color-accent-primary)',
+          hover: 'var(--color-accent-hover)',
+          light: 'var(--color-accent-light)',
         },
         background: {
           primary: 'var(--color-background-primary)',
