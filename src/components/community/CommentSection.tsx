@@ -46,69 +46,16 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   useEffect(() => {
     const loadComments = async () => {
       try {
-        // Mock API call - replace with actual API
-        const mockComments: Comment[] = [
-          {
-            id: 'comment_001',
-            content: '정말 대단한 아이디어네요! MVP 개발 과정에서 가장 어려웠던 부분이 무엇인가요?',
-            author: {
-              id: 'user_004',
-              name: '이댓글',
-              avatar: '💬',
-              level: 'Member'
-            },
-            post_id: postId,
-            parent_id: undefined,
-            likes: 5,
-            replies_count: 1,
-            is_liked: false,
-            is_edited: false,
-            created_at: '2025-08-16T10:15:00Z',
-            replies: [
-              {
-                id: 'comment_002',
-                content: '감사합니다! 가장 어려웠던 건 추천 알고리즘 정확도를 높이는 것이었어요.',
-                author: {
-                  id: 'user_001',
-                  name: '김개발',
-                  avatar: '👨‍💻',
-                  level: 'Maker'
-                },
-                post_id: postId,
-                parent_id: 'comment_001',
-                likes: 3,
-                replies_count: 0,
-                is_liked: true,
-                is_edited: false,
-                created_at: '2025-08-16T10:30:00Z',
-                replies: []
-              }
-            ]
-          },
-          {
-            id: 'comment_003',
-            content: '베타 테스터로 참여하고 싶습니다! 어떻게 신청하면 될까요?',
-            author: {
-              id: 'user_005',
-              name: '박테스터',
-              avatar: '🧪',
-              level: 'Tester'
-            },
-            post_id: postId,
-            parent_id: undefined,
-            likes: 8,
-            replies_count: 0,
-            is_liked: false,
-            is_edited: false,
-            created_at: '2025-08-16T11:45:00Z',
-            replies: []
-          }
-        ];
-
-        setTimeout(() => {
-          setComments(mockComments);
-          setLoading(false);
-        }, 500);
+        // Actual API call to fetch comments
+        const response = await fetch(`/api/community/comments?postId=${postId}`);
+        if (response.ok) {
+          const fetchedComments: Comment[] = await response.json();
+          setComments(fetchedComments);
+        } else {
+          // Fallback to empty array if API fails
+          setComments([]);
+        }
+        setLoading(false);
       } catch (error) {
         console.error('Failed to load comments:', error);
         setLoading(false);
