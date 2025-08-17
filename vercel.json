@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "regions": ["icn1", "sfo1"],
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
