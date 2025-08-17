@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { useState } from 'react';
 
 export function AuthNavbar() {
@@ -124,7 +124,7 @@ export function AuthNavbar() {
               </>
             )}
 
-            <ThemeToggle variant="icon-only" size="sm" />
+            <ThemeToggle />
           </div>
         </div>
       </div>

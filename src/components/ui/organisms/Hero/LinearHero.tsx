@@ -42,7 +42,7 @@ export interface LinearHeroProps {
   features?: Array<{
     icon: ReactNode;
     title: string;
-    description: string;
+    description?: string;
   }>;
   className?: string;
 }
@@ -198,7 +198,9 @@ export const LinearHero: React.FC<LinearHeroProps> = ({
                   </div>
                   <div className="linear-hero__feature-content">
                     <h3 className="linear-hero__feature-title">{feature.title}</h3>
-                    <p className="linear-hero__feature-description">{feature.description}</p>
+                    {feature.description && (
+                      <p className="linear-hero__feature-description">{feature.description}</p>
+                    )}
                   </div>
                 </div>
               ))}
