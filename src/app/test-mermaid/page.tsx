@@ -20,34 +20,80 @@ export default function TestMermaidPage() {
         setError(null);
         
         console.log('Loading Mermaid...');
+        
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          console.log('Server-side rendering, skipping...');
+          return;
+        }
+        
         const mermaid = (await import('mermaid')).default;
         
+        console.log('Mermaid loaded:', !!mermaid);
+        console.log('Mermaid version:', mermaid.version || 'unknown');
+        
         console.log('Initializing Mermaid...');
-        mermaid.initialize({
+        await mermaid.initialize({
           startOnLoad: false,
           theme: 'default',
           securityLevel: 'loose',
+          fontFamily: 'system-ui, sans-serif',
+          logLevel: 'debug',
+          flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true
+          }
         });
         
-        if (!diagramRef.current) return;
+        if (!diagramRef.current) {
+          console.log('No diagram ref available');
+          return;
+        }
         
-        console.log('Rendering diagram...');
+        console.log('Clearing previous content...');
+        diagramRef.current.innerHTML = '';
+        
+        console.log('Rendering diagram with code:', testCode);
         const id = `test-diagram-${Date.now()}`;
+        
+        // Try parsing first
+        const parseResult = await mermaid.parse(testCode);
+        console.log('Parse result:', parseResult);
+        
         const { svg } = await mermaid.render(id, testCode);
         
-        console.log('SVG result:', svg.substring(0, 100) + '...');
+        console.log('SVG generated:', svg ? 'yes' : 'no');
+        console.log('SVG length:', svg?.length || 0);
+        console.log('SVG preview:', svg?.substring(0, 200) + '...');
         
-        diagramRef.current.innerHTML = svg;
+        if (svg && diagramRef.current) {
+          diagramRef.current.innerHTML = svg;
+          console.log('SVG inserted into DOM');
+          
+          // Make responsive
+          const svgElement = diagramRef.current.querySelector('svg');
+          if (svgElement) {
+            console.log('Making SVG responsive...');
+            svgElement.style.width = '100%';
+            svgElement.style.height = 'auto';
+          }
+        }
+        
         setIsLoading(false);
+        console.log('Rendering completed successfully');
         
       } catch (err) {
         console.error('Mermaid test error:', err);
+        console.error('Error stack:', err instanceof Error ? err.stack : 'No stack');
         setError(err instanceof Error ? err.message : 'Unknown error');
         setIsLoading(false);
       }
     };
 
-    renderMermaid();
+    // Add delay to ensure DOM is ready
+    const timer = setTimeout(renderMermaid, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (

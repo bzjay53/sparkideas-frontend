@@ -26,7 +26,7 @@ export default function MermaidDiagram({
   const [error, setError] = useState<string | null>(null);
   const [renderKey, setRenderKey] = useState(0);
 
-  // Simple and reliable Mermaid renderer
+  // Enhanced Mermaid renderer with better error handling
   useEffect(() => {
     let mounted = true;
     
@@ -40,38 +40,107 @@ export default function MermaidDiagram({
         setIsLoading(true);
         setError(null);
         
-        // Import and initialize Mermaid
-        const mermaid = (await import('mermaid')).default;
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          console.log('[Mermaid] Server-side rendering, skipping...');
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('[Mermaid] Starting render process...');
         
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: 'default',
-          securityLevel: 'loose',
-          fontFamily: 'system-ui, sans-serif',
-          flowchart: {
-            useMaxWidth: true,
-            htmlLabels: true,
-            curve: 'basis'
-          },
-          sequence: {
-            useMaxWidth: true
-          },
-          gantt: {
-            useMaxWidth: true
-          }
-        });
+        // Dynamic import with error handling
+        let mermaid;
+        try {
+          const mermaidModule = await import('mermaid');
+          mermaid = mermaidModule.default;
+          console.log('[Mermaid] Library loaded successfully');
+        } catch (importError) {
+          console.error('[Mermaid] Failed to import library:', importError);
+          throw new Error('Mermaid 라이브러리를 로드할 수 없습니다');
+        }
+
+        // Initialize with enhanced config
+        try {
+          await mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'system-ui, sans-serif',
+            logLevel: 'error', // Reduce console noise
+            suppressErrorRendering: true,
+            flowchart: {
+              useMaxWidth: true,
+              htmlLabels: true,
+              curve: 'basis'
+            },
+            sequence: {
+              useMaxWidth: true,
+              wrap: true,
+              width: 300
+            },
+            gantt: {
+              useMaxWidth: true,
+              leftPadding: 75
+            },
+            er: {
+              useMaxWidth: true
+            },
+            graph: {
+              useMaxWidth: true
+            }
+          });
+          console.log('[Mermaid] Initialized successfully');
+        } catch (initError) {
+          console.error('[Mermaid] Initialization failed:', initError);
+          throw new Error('Mermaid 초기화에 실패했습니다');
+        }
+
+        if (!mounted || !diagramRef.current) {
+          console.log('[Mermaid] Component unmounted or ref lost');
+          return;
+        }
 
         // Clear previous content
         diagramRef.current.innerHTML = '';
         
         // Generate unique ID
         const id = `mermaid-diagram-${Date.now()}-${renderKey}`;
+        console.log('[Mermaid] Rendering with ID:', id);
         
-        // Render diagram
-        const { svg } = await mermaid.render(id, code);
+        // Validate diagram code first
+        try {
+          const parseResult = await mermaid.parse(code);
+          console.log('[Mermaid] Code validation passed');
+        } catch (parseError) {
+          console.error('[Mermaid] Code validation failed:', parseError);
+          throw new Error(`다이어그램 코드에 오류가 있습니다: ${parseError.message}`);
+        }
+        
+        // Render diagram with timeout
+        let svg;
+        try {
+          const renderPromise = mermaid.render(id, code);
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('렌더링 시간 초과')), 10000)
+          );
+          
+          const result = await Promise.race([renderPromise, timeoutPromise]);
+          svg = result.svg;
+          console.log('[Mermaid] Rendering completed, SVG length:', svg?.length || 0);
+        } catch (renderError) {
+          console.error('[Mermaid] Rendering failed:', renderError);
+          throw new Error(`다이어그램 렌더링에 실패했습니다: ${renderError.message}`);
+        }
+        
+        if (!svg) {
+          throw new Error('빈 SVG가 생성되었습니다');
+        }
         
         if (mounted && diagramRef.current) {
+          // Insert SVG
           diagramRef.current.innerHTML = svg;
+          console.log('[Mermaid] SVG inserted into DOM');
           
           // Make responsive
           const svgElement = diagramRef.current.querySelector('svg');
@@ -80,21 +149,26 @@ export default function MermaidDiagram({
             svgElement.style.width = '100%';
             svgElement.style.height = 'auto';
             svgElement.style.maxWidth = '100%';
+            svgElement.style.display = 'block';
+            svgElement.style.margin = '0 auto';
+            console.log('[Mermaid] SVG made responsive');
           }
           
           setIsLoading(false);
+          console.log('[Mermaid] Render process completed successfully');
         }
       } catch (err) {
         if (mounted) {
-          console.error('Mermaid render error:', err);
-          setError(err instanceof Error ? err.message : 'Failed to render diagram');
+          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+          console.error('[Mermaid] Final error:', errorMessage);
+          setError(errorMessage);
           setIsLoading(false);
         }
       }
     };
 
-    // Add small delay to ensure DOM is ready
-    const timer = setTimeout(renderMermaid, 200);
+    // Add delay to ensure DOM is ready
+    const timer = setTimeout(renderMermaid, 300);
     
     return () => {
       mounted = false;
