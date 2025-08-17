@@ -10,9 +10,16 @@ export async function GET(request: NextRequest) {
 
     const results = {
       timestamp: new Date().toISOString(),
-      tasks: [],
+      tasks: [] as Array<{
+        name: string;
+        status: string;
+        data?: any;
+      }>,
       success: true,
-      errors: []
+      errors: [] as Array<{
+        task: string;
+        error: string;
+      }>
     };
 
     // 1. 갈증포인트 수집
