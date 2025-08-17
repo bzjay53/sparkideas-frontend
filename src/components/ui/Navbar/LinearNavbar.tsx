@@ -70,6 +70,9 @@ export const LinearNavbar: React.FC<LinearNavbarProps> = ({
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
+    
+    // Return cleanup function for all code paths
+    return () => {};
   }, [activeDropdown]);
 
   const baseClass = 'linear-navbar';
