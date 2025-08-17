@@ -111,7 +111,8 @@ export default function MermaidDiagram({
           console.log('[Mermaid] Code validation passed');
         } catch (parseError) {
           console.error('[Mermaid] Code validation failed:', parseError);
-          throw new Error(`다이어그램 코드에 오류가 있습니다: ${parseError.message}`);
+          const errorMessage = parseError instanceof Error ? parseError.message : 'Unknown parsing error';
+          throw new Error(`다이어그램 코드에 오류가 있습니다: ${errorMessage}`);
         }
         
         // Render diagram with timeout
@@ -127,7 +128,8 @@ export default function MermaidDiagram({
           console.log('[Mermaid] Rendering completed, SVG length:', svg?.length || 0);
         } catch (renderError) {
           console.error('[Mermaid] Rendering failed:', renderError);
-          throw new Error(`다이어그램 렌더링에 실패했습니다: ${renderError.message}`);
+          const errorMessage = renderError instanceof Error ? renderError.message : 'Unknown rendering error';
+          throw new Error(`다이어그램 렌더링에 실패했습니다: ${errorMessage}`);
         }
         
         if (!svg) {
