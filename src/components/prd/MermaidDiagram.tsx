@@ -85,9 +85,6 @@ export default function MermaidDiagram({
             },
             er: {
               useMaxWidth: true
-            },
-            graph: {
-              useMaxWidth: true
             }
           });
           console.log('[Mermaid] Initialized successfully');
