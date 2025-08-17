@@ -113,10 +113,10 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
       {/* Target Market */}
       <Section id="market" title="타겟 시장" icon={UserGroupIcon}>
         <div className="mt-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <LinearCard variant="default" padding="md" className="bg-blue-50 border-blue-200">
             <h4 className="font-medium text-blue-900 mb-2">주요 타겟</h4>
             <p className="text-blue-800">{prd.target_market}</p>
-          </div>
+          </LinearCard>
         </div>
       </Section>
 
@@ -124,7 +124,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
       <Section id="features" title="핵심 기능" icon={CpuChipIcon}>
         <div className="mt-4 space-y-4">
           {prd.features.map((feature: any, index: number) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4">
+            <LinearCard key={index} variant="default" padding="md">
               <div className="flex items-start justify-between mb-2">
                 <h4 className="font-medium text-gray-900">{feature.name}</h4>
                 <div className="flex items-center space-x-2">
@@ -160,7 +160,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
                   <span className="font-medium">의존성:</span> {feature.dependencies.join(', ')}
                 </div>
               )}
-            </div>
+            </LinearCard>
           ))}
         </div>
       </Section>
@@ -169,7 +169,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
       <Section id="tech" title="기술 요구사항" icon={CpuChipIcon}>
         <div className="mt-4 space-y-4">
           {Object.entries(prd.technical_requirements).map(([category, details]: [string, any]) => (
-            <div key={category} className="border border-gray-200 rounded-lg p-4">
+            <LinearCard key={category} variant="default" padding="md">
               <h4 className="font-medium text-gray-900 mb-3 capitalize">{category}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {Object.entries(details).map(([key, value]: [string, any]) => (
@@ -179,7 +179,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
                   </div>
                 ))}
               </div>
-            </div>
+            </LinearCard>
           ))}
         </div>
       </Section>
@@ -189,10 +189,12 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
         <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {prd.success_metrics.map((metric: string, index: number) => (
-              <div key={index} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                <TrophyIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span className="text-sm text-green-800">{metric}</span>
-              </div>
+              <LinearCard key={index} variant="default" padding="sm" className="bg-green-50 border-green-200">
+                <div className="flex items-center space-x-3">
+                  <TrophyIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <span className="text-sm text-green-800">{metric}</span>
+                </div>
+              </LinearCard>
             ))}
           </div>
         </div>
@@ -201,11 +203,11 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
       {/* Timeline */}
       <Section id="timeline" title="개발 일정" icon={CalendarIcon}>
         <div className="mt-4">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <LinearCard variant="default" padding="md" className="bg-gray-50">
             <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
               {prd.timeline}
             </pre>
-          </div>
+          </LinearCard>
         </div>
       </Section>
 
@@ -217,7 +219,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {prd.diagrams.map((diagram: any, index: number) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 text-center">
+              <LinearCard key={index} variant="default" padding="md" className="text-center">
                 <div className="text-3xl mb-2">
                   {diagram.type === 'flowchart' ? '🔄' : 
                    diagram.type === 'erDiagram' ? '🗄️' : '🏗️'}
@@ -227,7 +229,7 @@ export default function PRDViewer({ prd }: PRDViewerProps) {
                 <div className="text-xs text-gray-500">
                   복잡도: {diagram.complexity_score}/10
                 </div>
-              </div>
+              </LinearCard>
             ))}
           </div>
         </div>

@@ -32,21 +32,37 @@ export default function MermaidDiagram({
   useEffect(() => {
     const loadMermaid = async () => {
       try {
+        setIsLoading(true);
+        
+        // Only run on client side
+        if (typeof window === 'undefined') {
+          return;
+        }
+
         // Check if mermaid is already loaded
-        if (typeof window !== 'undefined' && (window as any).mermaid) {
+        if ((window as any).mermaid) {
+          console.log('Mermaid already loaded');
           setMermaidLoaded(true);
           return;
         }
 
+        console.log('Loading Mermaid...');
+        
         // Dynamically import mermaid
         const mermaidModule = await import('mermaid');
         const mermaid = mermaidModule.default;
+        
+        console.log('Mermaid imported successfully', mermaid);
+        
+        // Store mermaid in window for reuse
+        (window as any).mermaid = mermaid;
         
         // Initialize mermaid
         mermaid.initialize({
           startOnLoad: false,
           theme: 'default',
           securityLevel: 'loose',
+          fontFamily: 'Inter, system-ui, sans-serif',
           themeVariables: {
             primaryColor: '#3B82F6',
             primaryTextColor: '#1F2937',
@@ -57,27 +73,38 @@ export default function MermaidDiagram({
           }
         });
 
+        console.log('Mermaid initialized');
         setMermaidLoaded(true);
       } catch (err) {
         console.error('Failed to load Mermaid:', err);
-        setError('Mermaid 라이브러리를 로드할 수 없습니다.');
+        setError(`Mermaid 라이브러리 로드 실패: ${err instanceof Error ? err.message : 'Unknown error'}`);
         setIsLoading(false);
       }
     };
 
-    loadMermaid();
+    // Add delay to ensure DOM is ready
+    const timer = setTimeout(loadMermaid, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Render diagram when mermaid is loaded
   useEffect(() => {
-    if (!mermaidLoaded || !diagramRef.current || !code) return;
+    if (!mermaidLoaded || !diagramRef.current || !code) {
+      console.log('Skipping render:', { mermaidLoaded, hasRef: !!diagramRef.current, hasCode: !!code });
+      return;
+    }
 
     const renderDiagram = async () => {
       try {
+        console.log('Starting diagram render...');
         setIsLoading(true);
         setError(null);
 
         const mermaid = (window as any).mermaid;
+        if (!mermaid) {
+          throw new Error('Mermaid not available');
+        }
         
         // Clear previous content
         if (diagramRef.current) {
@@ -85,19 +112,32 @@ export default function MermaidDiagram({
         }
 
         // Generate unique ID for this diagram
-        const diagramId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+        const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
         
-        // Validate and render
-        const isValid = await mermaid.parse(code);
-        if (!isValid) {
-          throw new Error('Invalid Mermaid syntax');
+        console.log('Rendering with ID:', diagramId);
+        console.log('Code:', code);
+        
+        try {
+          // Try to parse first
+          console.log('Parsing code...');
+          const parseResult = await mermaid.parse(code);
+          console.log('Parse result:', parseResult);
+          
+          if (!parseResult) {
+            throw new Error('Invalid Mermaid syntax');
+          }
+        } catch (parseError) {
+          console.error('Parse error:', parseError);
+          throw new Error(`Syntax error: ${parseError instanceof Error ? parseError.message : 'Invalid syntax'}`);
         }
 
         // Render the diagram
-        const { svg } = await mermaid.render(diagramId, code);
+        console.log('Rendering diagram...');
+        const renderResult = await mermaid.render(diagramId, code);
+        console.log('Render result:', renderResult);
         
-        if (diagramRef.current) {
-          diagramRef.current.innerHTML = svg;
+        if (diagramRef.current && renderResult.svg) {
+          diagramRef.current.innerHTML = renderResult.svg;
           
           // Make diagram responsive
           const svgElement = diagramRef.current.querySelector('svg');
@@ -107,6 +147,10 @@ export default function MermaidDiagram({
             svgElement.style.height = 'auto';
             svgElement.style.maxWidth = '100%';
           }
+          
+          console.log('Diagram rendered successfully');
+        } else {
+          throw new Error('No SVG content returned');
         }
 
         setIsLoading(false);
@@ -117,7 +161,10 @@ export default function MermaidDiagram({
       }
     };
 
-    renderDiagram();
+    // Add small delay to ensure DOM is ready
+    const timer = setTimeout(renderDiagram, 200);
+    
+    return () => clearTimeout(timer);
   }, [mermaidLoaded, code]);
 
   const copyToClipboard = async () => {

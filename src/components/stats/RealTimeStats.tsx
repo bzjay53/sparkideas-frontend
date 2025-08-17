@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { LinearCard } from '@/components/ui';
 
 interface StatsData {
   painPoints: number;
@@ -92,10 +93,12 @@ export function RealTimeStats() {
           <h2 className="text-3xl font-bold mb-12 text-gray-900 dark:text-white">실시간 현황</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="animate-pulse">
-                <div className="bg-gray-200 dark:bg-gray-700 h-12 w-24 mx-auto mb-2 rounded"></div>
-                <div className="bg-gray-200 dark:bg-gray-700 h-4 w-32 mx-auto rounded"></div>
-              </div>
+              <LinearCard key={index} padding="lg" shadow="md" className="animate-pulse">
+                <div className="text-center">
+                  <div className="bg-gray-200 dark:bg-gray-700 h-12 w-24 mx-auto mb-2 rounded"></div>
+                  <div className="bg-gray-200 dark:bg-gray-700 h-4 w-32 mx-auto rounded"></div>
+                </div>
+              </LinearCard>
             ))}
           </div>
         </div>
@@ -116,41 +119,47 @@ export function RealTimeStats() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="group">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2 group-hover:scale-105 transition-transform">
-              {stats ? formatNumber(stats.painPoints) : '1,200+'}
-            </div>
-            <div className="text-gray-600 dark:text-gray-300">수집된 갈증포인트</div>
-            {stats?.realData?.growthMetrics.painPointsGrowth && (
-              <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                {stats.realData.growthMetrics.painPointsGrowth} 이번 주
+          <LinearCard padding="lg" shadow="md" className="group hover:shadow-lg transition-all">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2 group-hover:scale-105 transition-transform">
+                {stats ? formatNumber(stats.painPoints) : '1,200+'}
               </div>
-            )}
-          </div>
+              <div className="text-gray-600 dark:text-gray-300">수집된 갈증포인트</div>
+              {stats?.realData?.growthMetrics.painPointsGrowth && (
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  {stats.realData.growthMetrics.painPointsGrowth} 이번 주
+                </div>
+              )}
+            </div>
+          </LinearCard>
 
-          <div className="group">
-            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2 group-hover:scale-105 transition-transform">
-              {stats ? formatNumber(stats.businessIdeas) : '850+'}
-            </div>
-            <div className="text-gray-600 dark:text-gray-300">생성된 비즈니스 아이디어</div>
-            {stats?.realData?.growthMetrics.ideasGrowth && (
-              <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                {stats.realData.growthMetrics.ideasGrowth} 이번 주
+          <LinearCard padding="lg" shadow="md" className="group hover:shadow-lg transition-all">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2 group-hover:scale-105 transition-transform">
+                {stats ? formatNumber(stats.businessIdeas) : '850+'}
               </div>
-            )}
-          </div>
+              <div className="text-gray-600 dark:text-gray-300">생성된 비즈니스 아이디어</div>
+              {stats?.realData?.growthMetrics.ideasGrowth && (
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  {stats.realData.growthMetrics.ideasGrowth} 이번 주
+                </div>
+              )}
+            </div>
+          </LinearCard>
 
-          <div className="group">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2 group-hover:scale-105 transition-transform">
-              {stats ? `${stats.aiAccuracy}%` : '92%'}
-            </div>
-            <div className="text-gray-600 dark:text-gray-300">AI 분석 정확도</div>
-            {stats?.realData?.growthMetrics.accuracyTrend && (
-              <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                {stats.realData.growthMetrics.accuracyTrend} 개선
+          <LinearCard padding="lg" shadow="md" className="group hover:shadow-lg transition-all">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2 group-hover:scale-105 transition-transform">
+                {stats ? `${stats.aiAccuracy}%` : '92%'}
               </div>
-            )}
-          </div>
+              <div className="text-gray-600 dark:text-gray-300">AI 분석 정확도</div>
+              {stats?.realData?.growthMetrics.accuracyTrend && (
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  {stats.realData.growthMetrics.accuracyTrend} 개선
+                </div>
+              )}
+            </div>
+          </LinearCard>
         </div>
 
         {/* Last updated timestamp */}

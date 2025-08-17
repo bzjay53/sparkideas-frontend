@@ -311,6 +311,7 @@ export interface FeatureFlags {
   enableDarkMode: boolean;
   showPerformanceMetrics: boolean;
   enableDebug: boolean;
+  enableSocialLogin: boolean;
 }
 
 export interface EnvironmentConfig {

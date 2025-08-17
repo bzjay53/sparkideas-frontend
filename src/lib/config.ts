@@ -39,6 +39,7 @@ const featureFlags: FeatureFlags = {
   enableDarkMode: getBooleanEnv('NEXT_PUBLIC_ENABLE_DARK_MODE', true),
   showPerformanceMetrics: getBooleanEnv('NEXT_PUBLIC_SHOW_PERFORMANCE_METRICS', true),
   enableDebug: getBooleanEnv('NEXT_PUBLIC_ENABLE_DEBUG', false),
+  enableSocialLogin: getBooleanEnv('NEXT_PUBLIC_ENABLE_SOCIAL_LOGIN', false),
 };
 
 // ============================================================================
