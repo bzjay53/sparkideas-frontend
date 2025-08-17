@@ -123,7 +123,7 @@ export default function MermaidDiagram({
             setTimeout(() => reject(new Error('렌더링 시간 초과')), 10000)
           );
           
-          const result = await Promise.race([renderPromise, timeoutPromise]);
+          const result = await Promise.race([renderPromise, timeoutPromise]) as { svg: string };
           svg = result.svg;
           console.log('[Mermaid] Rendering completed, SVG length:', svg?.length || 0);
         } catch (renderError) {
