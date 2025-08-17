@@ -16,21 +16,35 @@ module.exports = {
           light: '#dbeafe',        // var(--color-accent-light)
         },
         background: {
-          primary: '#ffffff',      // var(--color-background-primary)
-          secondary: '#f8fafc',    // var(--color-background-secondary)
-          tertiary: '#f1f5f9',     // var(--color-background-tertiary)
-          elevated: '#ffffff',     // var(--color-background-elevated)
+          primary: 'var(--color-background-primary)',
+          secondary: 'var(--color-background-secondary)',
+          tertiary: 'var(--color-background-tertiary)',
+          elevated: 'var(--color-background-elevated)',
         },
         text: {
-          primary: '#1e293b',      // var(--color-text-primary)
-          secondary: '#64748b',    // var(--color-text-secondary)
-          tertiary: '#94a3b8',     // var(--color-text-tertiary)
-          inverse: '#ffffff',      // var(--color-text-inverse)
+          primary: 'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
+          tertiary: 'var(--color-text-tertiary)',
+          inverse: 'var(--color-text-inverse)',
         },
         border: {
-          primary: '#e2e8f0',      // var(--color-border-primary)
-          secondary: '#cbd5e1',    // var(--color-border-secondary)
+          primary: 'var(--color-border-primary)',
+          secondary: 'var(--color-border-secondary)',
           focus: '#3b82f6',        // var(--color-border-focus)
+        },
+        // Tailwind 기본 다크모드 색상 추가
+        gray: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+          950: '#030712',
         },
       },
       spacing: {
