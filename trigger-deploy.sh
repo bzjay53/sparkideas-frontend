@@ -4,8 +4,8 @@
 
 echo "🚀 Triggering Vercel deployment via Deploy Hook..."
 
-# Deploy Hook URL (나중에 Vercel Dashboard에서 생성)
-DEPLOY_HOOK_URL=""
+# Deploy Hook URL
+DEPLOY_HOOK_URL="https://api.vercel.com/v1/integrations/deploy/prj_VVNxCradIZsLU7cLiSNRUYErPUM0/XnqnzpOeLs"
 
 if [ -z "$DEPLOY_HOOK_URL" ]; then
     echo "⚠️  Deploy Hook URL not configured"
