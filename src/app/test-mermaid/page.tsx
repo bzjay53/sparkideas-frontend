@@ -30,7 +30,7 @@ export default function TestMermaidPage() {
         const mermaid = (await import('mermaid')).default;
         
         console.log('Mermaid loaded:', !!mermaid);
-        console.log('Mermaid version:', mermaid.version || 'unknown');
+        console.log('Mermaid object keys:', Object.keys(mermaid));
         
         console.log('Initializing Mermaid...');
         await mermaid.initialize({
