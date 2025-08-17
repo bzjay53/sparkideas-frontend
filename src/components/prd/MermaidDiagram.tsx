@@ -8,6 +8,13 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
+// Extend window object for Mermaid
+declare global {
+  interface Window {
+    mermaid: any;
+  }
+}
+
 interface MermaidDiagramProps {
   code: string;
   title?: string;
@@ -26,9 +33,30 @@ export default function MermaidDiagram({
   const [error, setError] = useState<string | null>(null);
   const [renderKey, setRenderKey] = useState(0);
 
-  // Enhanced Mermaid renderer with better error handling
+  // Enhanced Mermaid renderer with CDN fallback
   useEffect(() => {
     let mounted = true;
+    
+    const loadMermaidFromCDN = () => {
+      return new Promise((resolve, reject) => {
+        // Check if already loaded
+        if (window.mermaid) {
+          resolve(window.mermaid);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.9.0/dist/mermaid.min.js';
+        script.onload = () => {
+          console.log('[Mermaid] CDN loaded successfully');
+          resolve(window.mermaid);
+        };
+        script.onerror = () => {
+          reject(new Error('Failed to load Mermaid from CDN'));
+        };
+        document.head.appendChild(script);
+      });
+    };
     
     const renderMermaid = async () => {
       if (!diagramRef.current || !code.trim()) {
@@ -49,39 +77,39 @@ export default function MermaidDiagram({
 
         console.log('[Mermaid] Starting render process...');
         
-        // Dynamic import with error handling
+        // Try CDN first, then fallback to npm package
         let mermaid;
         try {
-          const mermaidModule = await import('mermaid');
-          mermaid = mermaidModule.default;
-          console.log('[Mermaid] Library loaded successfully');
-        } catch (importError) {
-          console.error('[Mermaid] Failed to import library:', importError);
-          throw new Error('Mermaid 라이브러리를 로드할 수 없습니다');
+          mermaid = await loadMermaidFromCDN();
+          console.log('[Mermaid] Using CDN version');
+        } catch (cdnError) {
+          console.log('[Mermaid] CDN failed, trying npm package...');
+          try {
+            const mermaidModule = await import('mermaid');
+            mermaid = mermaidModule.default;
+            console.log('[Mermaid] Using npm package version');
+          } catch (importError) {
+            console.error('[Mermaid] Both CDN and npm failed:', { cdnError, importError });
+            throw new Error('Mermaid 라이브러리를 로드할 수 없습니다');
+          }
         }
 
-        // Initialize with enhanced config
+        // Initialize with simpler config
         try {
-          await mermaid.initialize({
+          mermaid.initialize({
             startOnLoad: false,
             theme: 'default',
             securityLevel: 'loose',
-            fontFamily: 'system-ui, sans-serif',
-            logLevel: 'error', // Reduce console noise
-            suppressErrorRendering: true,
+            logLevel: 1, // Only errors
             flowchart: {
               useMaxWidth: true,
-              htmlLabels: true,
-              curve: 'basis'
+              htmlLabels: true
             },
             sequence: {
-              useMaxWidth: true,
-              wrap: true,
-              width: 300
+              useMaxWidth: true
             },
             gantt: {
-              useMaxWidth: true,
-              leftPadding: 75
+              useMaxWidth: true
             },
             er: {
               useMaxWidth: true
@@ -98,63 +126,57 @@ export default function MermaidDiagram({
           return;
         }
 
-        // Clear previous content
+        // Clear previous content and create container
         diagramRef.current.innerHTML = '';
         
         // Generate unique ID
-        const id = `mermaid-diagram-${Date.now()}-${renderKey}`;
+        const id = `mermaid-${Date.now()}-${renderKey}`;
         console.log('[Mermaid] Rendering with ID:', id);
         
-        // Validate diagram code first
-        try {
-          const parseResult = await mermaid.parse(code);
-          console.log('[Mermaid] Code validation passed');
-        } catch (parseError) {
-          console.error('[Mermaid] Code validation failed:', parseError);
-          const errorMessage = parseError instanceof Error ? parseError.message : 'Unknown parsing error';
-          throw new Error(`다이어그램 코드에 오류가 있습니다: ${errorMessage}`);
-        }
+        // Create a temporary div for rendering
+        const tempDiv = document.createElement('div');
+        tempDiv.id = id;
+        tempDiv.innerHTML = code;
+        tempDiv.style.visibility = 'hidden';
+        document.body.appendChild(tempDiv);
         
-        // Render diagram with timeout
-        let svg;
         try {
-          const renderPromise = mermaid.render(id, code);
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('렌더링 시간 초과')), 10000)
-          );
+          // Use Mermaid's direct rendering
+          await mermaid.run({
+            nodes: [tempDiv]
+          });
           
-          const result = await Promise.race([renderPromise, timeoutPromise]) as { svg: string };
-          svg = result.svg;
-          console.log('[Mermaid] Rendering completed, SVG length:', svg?.length || 0);
+          console.log('[Mermaid] Rendering completed');
+          
+          if (mounted && diagramRef.current) {
+            // Move the rendered content to our container
+            const renderedSvg = tempDiv.querySelector('svg');
+            if (renderedSvg) {
+              // Clone and insert
+              const clonedSvg = renderedSvg.cloneNode(true) as SVGElement;
+              clonedSvg.removeAttribute('height');
+              clonedSvg.style.width = '100%';
+              clonedSvg.style.height = 'auto';
+              clonedSvg.style.maxWidth = '100%';
+              clonedSvg.style.display = 'block';
+              clonedSvg.style.margin = '0 auto';
+              
+              diagramRef.current.appendChild(clonedSvg);
+              console.log('[Mermaid] SVG inserted and styled');
+              setIsLoading(false);
+            } else {
+              throw new Error('렌더링된 SVG를 찾을 수 없습니다');
+            }
+          }
         } catch (renderError) {
           console.error('[Mermaid] Rendering failed:', renderError);
           const errorMessage = renderError instanceof Error ? renderError.message : 'Unknown rendering error';
           throw new Error(`다이어그램 렌더링에 실패했습니다: ${errorMessage}`);
-        }
-        
-        if (!svg) {
-          throw new Error('빈 SVG가 생성되었습니다');
-        }
-        
-        if (mounted && diagramRef.current) {
-          // Insert SVG
-          diagramRef.current.innerHTML = svg;
-          console.log('[Mermaid] SVG inserted into DOM');
-          
-          // Make responsive
-          const svgElement = diagramRef.current.querySelector('svg');
-          if (svgElement) {
-            svgElement.removeAttribute('height');
-            svgElement.style.width = '100%';
-            svgElement.style.height = 'auto';
-            svgElement.style.maxWidth = '100%';
-            svgElement.style.display = 'block';
-            svgElement.style.margin = '0 auto';
-            console.log('[Mermaid] SVG made responsive');
+        } finally {
+          // Clean up temp div
+          if (document.body.contains(tempDiv)) {
+            document.body.removeChild(tempDiv);
           }
-          
-          setIsLoading(false);
-          console.log('[Mermaid] Render process completed successfully');
         }
       } catch (err) {
         if (mounted) {
