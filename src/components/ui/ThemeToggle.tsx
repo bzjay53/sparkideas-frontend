@@ -1,49 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
 
-  useEffect(() => {
-    // Check if user has a theme preference in localStorage
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
+  const getIcon = () => {
+    if (theme === 'light') {
+      return <SunIcon className="w-5 h-5 text-yellow-600" />;
+    } else if (theme === 'dark') {
+      return <MoonIcon className="w-5 h-5 text-blue-400" />;
     } else {
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
+      return <ComputerDesktopIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
     }
-  }, []);
+  };
 
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+  const getAriaLabel = () => {
+    if (theme === 'light') return '다크 모드로 전환';
+    if (theme === 'dark') return '시스템 설정 모드로 전환';
+    return '라이트 모드로 전환';
   };
 
   return (
     <button
       onClick={toggleTheme}
       className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-      aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+      aria-label={getAriaLabel()}
+      title={`현재: ${theme === 'system' ? `시스템 (${resolvedTheme})` : theme} 모드`}
     >
-      {isDark ? (
-        <SunIcon className="w-5 h-5 text-yellow-600" />
-      ) : (
-        <MoonIcon className="w-5 h-5 text-gray-600" />
-      )}
+      {getIcon()}
     </button>
   );
 }

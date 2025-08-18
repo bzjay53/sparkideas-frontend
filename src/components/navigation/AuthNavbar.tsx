@@ -35,30 +35,33 @@ export function AuthNavbar() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3 md:space-x-6">
             {!loading && (
               <>
                 {!user ? (
                   // Not authenticated navigation
                   <>
-                    <Link href="/auth" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
+                    <Link href="/auth" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors text-sm md:text-base">
                       로그인
                     </Link>
-                    <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-                      데모 보기
+                    <Link href="/dashboard?demo=true" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors text-sm md:text-base">
+                      <span className="hidden sm:inline">데모 보기</span>
+                      <span className="sm:hidden">데모</span>
                     </Link>
                   </>
                 ) : (
                   // Authenticated navigation
                   <>
-                    <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-                      대시보드
+                    <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors text-sm md:text-base">
+                      <span className="hidden sm:inline">대시보드</span>
+                      <span className="sm:hidden">홈</span>
                     </Link>
-                    <Link href="/community" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-                      커뮤니티
+                    <Link href="/community" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors text-sm md:text-base">
+                      <span className="hidden sm:inline">커뮤니티</span>
+                      <span className="sm:hidden">커뮤</span>
                     </Link>
-                    <Link href="/prd" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-                      PRD 생성
+                    <Link href="/prd" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors text-sm md:text-base">
+                      PRD
                     </Link>
                     
                     {/* User Profile Dropdown */}

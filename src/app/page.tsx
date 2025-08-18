@@ -1,7 +1,10 @@
+'use client';
+
 import { LinearCard, LinearHero } from '@/components/ui';
 import { AuthNavbar } from '@/components/navigation/AuthNavbar';
 import { RealTimeStats } from '@/components/stats/RealTimeStats';
 import { Suspense } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 function FeatureCards() {
   const features = [
@@ -66,6 +69,41 @@ function FeatureCards() {
 
 
 export default function Home() {
+  const { user, loading } = useAuth();
+
+  // 로그인 상태에 따른 버튼 동작 결정
+  const getPrimaryAction = () => {
+    if (loading) return { label: "로딩 중...", href: "#" };
+    
+    if (user) {
+      return {
+        label: "대시보드로 이동",
+        href: "/dashboard"
+      };
+    }
+    
+    return {
+      label: "지금 시작하기",
+      href: "/auth"
+    };
+  };
+
+  const getSecondaryAction = () => {
+    if (loading) return undefined;
+    
+    if (user) {
+      return {
+        label: "PRD 생성하기",
+        href: "/prd"
+      };
+    }
+    
+    return {
+      label: "데모 보기 (로그인 없이)",
+      href: "/dashboard?demo=true"
+    };
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <AuthNavbar />
@@ -77,17 +115,11 @@ export default function Home() {
         variant="gradient"
         size="xl"
         badge={{
-          text: "BETA",
-          variant: "info"
+          text: user ? "환영합니다!" : "BETA",
+          variant: user ? "success" : "info"
         }}
-        primaryAction={{
-          label: "지금 시작하기",
-          href: "/auth"
-        }}
-        secondaryAction={{
-          label: "데모 보기",
-          href: "/dashboard"
-        }}
+        primaryAction={getPrimaryAction()}
+        secondaryAction={getSecondaryAction()}
         features={[
           {
             icon: (
