@@ -1,5 +1,11 @@
 [
   {
+    "timestamp": "2025-08-18T09:29:38.013Z",
+    "action": "CREATE_CLAUDEPOINT",
+    "description": "Created full claudepoint: prerefactoring_stable_state__2025-08-18T09-29-37",
+    "details": "Pre-refactoring stable state - 다크테마 수정완료"
+  },
+  {
     "timestamp": "2025-08-17T07:20:40.146Z",
     "action": "CREATE_CLAUDEPOINT",
     "description": "Created full claudepoint: initial_ideaspark_checkpoint_b_2025-08-17T07-20-39",

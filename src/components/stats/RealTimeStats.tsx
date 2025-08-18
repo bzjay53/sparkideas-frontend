@@ -95,8 +95,8 @@ export function RealTimeStats() {
             {[...Array(3)].map((_, index) => (
               <LinearCard key={index} padding="lg" shadow="md" className="animate-pulse">
                 <div className="text-center">
-                  <div className="bg-gray-200 dark:bg-gray-700 h-12 w-24 mx-auto mb-2 rounded"></div>
-                  <div className="bg-gray-200 dark:bg-gray-700 h-4 w-32 mx-auto rounded"></div>
+                  <div className="h-12 w-24 mx-auto mb-2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 w-32 mx-auto bg-gray-200 dark:bg-gray-700 rounded"></div>
                 </div>
               </LinearCard>
             ))}
