@@ -79,4 +79,45 @@ claudepoint restore prerefactoring_stable_state__2025-08-18T09-29-37
 
 ---
 
-**다음 단계**: Dashboard 페이지의 하드코딩된 스타일 교체
+## 🔄 Step 2: Dashboard 페이지 스켈레톤 로딩 개선
+
+### **수정 파일**: `src/app/dashboard/page.tsx`
+- **라인**: 91-105
+- **수정 내용**: DashboardSkeleton 컴포넌트의 하드코딩된 div → LinearCard 교체
+
+### **Before (하드코딩된 div)**:
+```typescript
+<div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />
+<div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
+```
+
+### **After (LinearCard 활용)**:
+```typescript
+<LinearCard key={i} padding="md" className="h-24 animate-pulse">
+  <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded" />
+</LinearCard>
+<LinearCard padding="md" className="h-96 animate-pulse">
+  <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded" />
+</LinearCard>
+```
+
+### **변경 사항**:
+1. ✅ **LinearCard 구조 적용**: 스켈레톤 요소들을 LinearCard로 래핑
+2. ✅ **일관된 패딩**: `padding="md"` 적용
+3. ✅ **다크 테마 지원**: `dark:bg-gray-700` 유지
+4. ✅ **TypeScript children 요구사항**: 내부 div 요소 추가
+
+### **테스트 결과**:
+- ✅ **빌드**: `npm run build` 성공 (21.0초)
+- ✅ **타입 체크**: TypeScript 컴파일 에러 없음
+- ✅ **정적 생성**: 19개 페이지 모두 성공
+- ✅ **번들 크기**: 728-787kB (정상 범위)
+
+### **위험도 평가**: 🟢 **낮음**
+- 스켈레톤 로딩 UI만 개선
+- 기존 기능 변경 없음
+- 의미 있는 색상 배지는 유지 (예: 출처, 신뢰도 표시)
+
+---
+
+**다음 단계**: Community 페이지의 하드코딩된 스타일 교체
