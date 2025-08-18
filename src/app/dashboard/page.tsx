@@ -279,12 +279,12 @@ function DashboardPageContent() {
   if (isDemo) {
     // Demo mode - no authentication required
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      <div className="page-background">
         <AuthNavbar />
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">IdeaSpark 대시보드 (데모)</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--color-text-primary)' }}>IdeaSpark 대시보드 (데모)</h1>
+            <p className="mt-2" style={{ color: 'var(--color-text-secondary)' }}>
               실시간 갈증포인트 분석 및 비즈니스 아이디어 현황 - 데모 버전
             </p>
           </div>
