@@ -1,6 +1,7 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "ideaspark",
+  "version": "2.0.0",
+  "description": "AI-powered business idea generation platform with real-time pain point analysis",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
