@@ -42,116 +42,82 @@ export default function CommunityPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTag, setSelectedTag] = useState('');
 
-  // Mock community posts
-  useEffect(() => {
-    const mockPosts: Post[] = [
-      {
-        id: 'post_001',
-        title: '🚀 AI 쇼핑 추천 앱 MVP 완성! 피드백 구합니다',
-        content: 'IdeaSpark에서 생성한 PRD를 바탕으로 3주 만에 MVP를 완성했습니다. 개인화된 추천 알고리즘이 핵심이고, 현재 베타 테스터를 모집하고 있어요. 많은 피드백 부탁드립니다!',
-        author: {
-          name: '김개발',
-          avatar: '👨‍💻',
-          level: 'Maker'
-        },
-        tags: ['자랑', 'MVP', 'AI', '쇼핑'],
-        likes: 42,
-        comments: 18,
-        views: 234,
-        created_at: '2025-08-16T09:30:00Z',
-        category: 'showcase',
-        isLiked: false,
-        isBookmarked: true,
-        status: 'hot'
-      },
-      {
-        id: 'post_002', 
-        title: '💡 헬스케어 IoT 프로젝트 같이 하실 분 모집',
-        content: 'PRD 생성 완료하고 기술 스택도 정했는데, 백엔드 개발자 1명과 IoT 전문가 1명이 더 필요합니다. 수익 공유 방식으로 진행하려고 해요. 관심 있으신 분 댓글 주세요!',
-        author: {
-          name: '이기획',
-          avatar: '👩‍💼',
-          level: 'Innovator'
-        },
-        tags: ['협업', '헬스케어', 'IoT', '팀모집'],
-        likes: 28,
-        comments: 12,
-        views: 156,
-        created_at: '2025-08-15T14:20:00Z',
-        category: 'collaboration',
-        isLiked: true,
-        isBookmarked: false
-      },
-      {
-        id: 'post_003',
-        title: '📊 B2B SaaS 검증 결과 공유 - 월 MRR $12k 달성!',
-        content: 'IdeaSpark PRD로 시작한 팀 협업 도구가 론칭 6개월 만에 월 $12k MRR을 달성했습니다. 초기 시장 검증부터 PMF 찾기까지의 여정을 상세히 공유드립니다.',
-        author: {
-          name: '박창업',
-          avatar: '🚀',
-          level: 'Unicorn'
-        },
-        tags: ['성공사례', 'SaaS', 'B2B', 'PMF'],
-        likes: 89,
-        comments: 34,
-        views: 567,
-        created_at: '2025-08-14T11:15:00Z',
-        category: 'success',
-        isLiked: false,
-        isBookmarked: true,
-        status: 'trending'
-      },
-      {
-        id: 'post_004',
-        title: '🛠️ React Native 개발자 구합니다 (외주)',
-        content: '모바일 쇼핑 앱 개발 프로젝트에서 React Native 개발자를 찾고 있습니다. 3개월 프로젝트이고 협상 가능한 조건으로 진행하려고 합니다.',
-        author: {
-          name: '최외주',
-          avatar: '💼',
-          level: 'Builder'
-        },
-        tags: ['외주', 'React Native', '모바일', '3개월'],
-        likes: 15,
-        comments: 8,
-        views: 123,
-        created_at: '2025-08-13T16:45:00Z',
-        category: 'freelance',
-        isLiked: false,
-        isBookmarked: false
-      },
-      {
-        id: 'post_005',
-        title: '💬 AI 기반 아이디어 검증 프로세스 개선 제안',
-        content: 'IdeaSpark을 3개월 써보면서 느낀 점들과 개선 아이디어를 공유합니다. 특히 갈증포인트 수집 정확도를 높이는 방법에 대해 논의하고 싶어요.',
-        author: {
-          name: '정분석',
-          avatar: '🔍',
-          level: 'Analyst'
-        },
-        tags: ['공유', '분석', '개선', 'AI'],
-        likes: 22,
-        comments: 15,
-        views: 189,
-        created_at: '2025-08-12T13:30:00Z',
-        category: 'discussion',
-        isLiked: true,
-        isBookmarked: false
+  // 실제 API에서 커뮤니티 게시글 로드
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      
+      const params = new URLSearchParams();
+      if (selectedCategory && selectedCategory !== 'all') {
+        params.set('category', selectedCategory);
       }
-    ];
+      if (searchQuery.trim()) {
+        params.set('search', searchQuery.trim());
+      }
+      if (selectedTag) {
+        params.set('tag', selectedTag);
+      }
+      params.set('limit', '20');
 
-    setTimeout(() => {
-      setPosts(mockPosts);
+      const response = await fetch(`/api/community/posts?${params}`);
+      const result = await response.json();
+
+      if (result.success && result.data?.posts) {
+        // API 응답을 frontend 형태로 변환
+        const transformedPosts: Post[] = result.data.posts.map((post: any) => ({
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          author: post.author,
+          tags: post.tags || [],
+          likes: post.likes_count || 0,
+          comments: post.comments_count || 0,
+          views: post.views || 0,
+          created_at: post.created_at,
+          category: post.category,
+          isLiked: post.isLiked || false,
+          isBookmarked: post.isBookmarked || false,
+          status: post.status
+        }));
+
+        setPosts(transformedPosts);
+      } else {
+        console.error('Failed to fetch posts:', result.error);
+        // Fallback to empty state
+        setPosts([]);
+      }
+    } catch (error) {
+      console.error('Error fetching community posts:', error);
+      // Fallback to empty state
+      setPosts([]);
+    } finally {
       setLoading(false);
-    }, 800);
-  }, []);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [selectedCategory, selectedTag]); // searchQuery는 제외하여 타이핑 중 불필요한 요청 방지
+
+  // 검색 쿼리 변경 시 디바운스 적용
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery !== '') {
+        fetchPosts();
+      } else if (searchQuery === '' && posts.length === 0) {
+        fetchPosts();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const categories = [
     { id: 'all', name: '전체', icon: '📋', count: posts.length },
-    { id: 'showcase', name: '자랑', icon: '🚀', count: posts.filter(p => p.category === 'showcase').length },
-    { id: 'collaboration', name: '협업', icon: '🤝', count: posts.filter(p => p.category === 'collaboration').length },
-    { id: 'success', name: '성공사례', icon: '🏆', count: posts.filter(p => p.category === 'success').length },
-    { id: 'freelance', name: '외주', icon: '💼', count: posts.filter(p => p.category === 'freelance').length },
-    { id: 'discussion', name: '토론', icon: '💬', count: posts.filter(p => p.category === 'discussion').length }
+    { id: '자랑', name: '자랑', icon: '🚀', count: posts.filter(p => p.category === '자랑').length },
+    { id: '협업', name: '협업', icon: '🤝', count: posts.filter(p => p.category === '협업').length },
+    { id: '외주', name: '외주', icon: '💼', count: posts.filter(p => p.category === '외주').length },
+    { id: '공유', name: '공유', icon: '💬', count: posts.filter(p => p.category === '공유').length }
   ];
 
   const popularTags = ['협업', '자랑', 'AI', 'SaaS', '외주', '모바일', 'B2B', '성공사례'];
@@ -231,7 +197,12 @@ export default function CommunityPage() {
               </p>
             </div>
             
-            <LinearButton variant="primary" size="lg" className="flex items-center space-x-2">
+            <LinearButton 
+              variant="primary" 
+              size="lg" 
+              className="flex items-center space-x-2"
+              onClick={() => window.location.href = '/community/create'}
+            >
               <PlusIcon className="w-5 h-5" />
               <span>글쓰기</span>
             </LinearButton>
@@ -353,7 +324,10 @@ export default function CommunityPage() {
                       : '첫 번째 게시글을 작성해보세요!'
                     }
                   </p>
-                  <LinearButton variant="primary">
+                  <LinearButton 
+                    variant="primary"
+                    onClick={() => window.location.href = '/community/create'}
+                  >
                     <PlusIcon className="w-5 h-5 mr-2" />
                     글쓰기
                   </LinearButton>

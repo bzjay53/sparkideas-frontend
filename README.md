@@ -44,13 +44,17 @@
 - `/matching` - 프로젝트 매칭
 - `/success-stories` - 성공 사례
 
-## 🔗 배포 URL
-https://sparkideas-app.vercel.app
+## 📚 문서 및 링크
+- **[📊 실시간 진행현황](./docs/PROJECT_PROGRESS.md)** - 현재 개발 상태 및 완료 작업
+- **[🔍 리팩토링 대기 작업](./docs/analysis/REFACTORING_TODO.md)** - 추가 개선 가능 항목들  
+- **[📖 전체 문서](./docs/)** - 체계화된 프로젝트 문서 아카이브
+- **[🌐 배포 URL](https://sparkideas-app.vercel.app)** - 라이브 데모
 
 ---
 
 **배포 날짜**: 2025-08-17  
-**버전**: v2.0 Complete Implementation
+**버전**: v2.0 Complete Implementation + Refactored  
+**문서 정리**: 2025-08-18 (체계화 완료)
 
 ## Getting Started
 

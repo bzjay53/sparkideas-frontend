@@ -143,6 +143,7 @@ export default function PRDListPage() {
               variant="primary" 
               size="lg"
               className="flex items-center space-x-2"
+              onClick={() => window.location.href = '/prd/create'}
             >
               <PlusIcon className="w-5 h-5" />
               <span>새 PRD 생성</span>
@@ -226,7 +227,10 @@ export default function PRDListPage() {
                   : '첫 번째 PRD를 생성해보세요!'
                 }
               </p>
-              <LinearButton variant="primary">
+              <LinearButton 
+                variant="primary"
+                onClick={() => window.location.href = '/prd/create'}
+              >
                 <PlusIcon className="w-5 h-5 mr-2" />
                 새 PRD 생성
               </LinearButton>
