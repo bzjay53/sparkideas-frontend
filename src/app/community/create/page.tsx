@@ -142,10 +142,10 @@ export default function CreatePostPage() {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                  ✍️ 새 글 작성
+                  <span className="text-gray-900">✍️ 새 글 작성</span>
                 </h1>
                 <p className="text-gray-600 text-sm mt-1">
-                  커뮤니티에 나누고 싶은 이야기를 작성해보세요
+                  <span className="text-gray-600">커뮤니티에 나누고 싶은 이야기를 작성해보세요</span>
                 </p>
               </div>
             </div>
@@ -157,9 +157,9 @@ export default function CreatePostPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* 제목 */}
               <LinearCard padding="lg" shadow="sm">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
+                <h2 className="text-lg font-semibold mb-4 flex items-center text-gray-900">
                   <DocumentTextIcon className="w-5 h-5 mr-2 text-blue-600" />
-                  제목
+                  <span className="text-gray-900">제목</span>
                 </h2>
                 <LinearInput
                   type="text"
@@ -178,7 +178,9 @@ export default function CreatePostPage() {
 
               {/* 카테고리 */}
               <LinearCard padding="lg" shadow="sm">
-                <h2 className="text-lg font-semibold mb-4">📂 카테고리</h2>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900">
+                  <span className="text-gray-900">📂 카테고리</span>
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {categories.map((category) => (
                     <label
@@ -220,7 +222,9 @@ export default function CreatePostPage() {
 
               {/* 프로젝트 단계 */}
               <LinearCard padding="lg" shadow="sm">
-                <h2 className="text-lg font-semibold mb-4">🚀 프로젝트 단계</h2>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900">
+                  <span className="text-gray-900">🚀 프로젝트 단계</span>
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {projectStatuses.map((status) => (
                     <label
@@ -250,7 +254,9 @@ export default function CreatePostPage() {
 
               {/* 내용 */}
               <LinearCard padding="lg" shadow="sm">
-                <h2 className="text-lg font-semibold mb-4">📝 내용</h2>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900">
+                  <span className="text-gray-900">📝 내용</span>
+                </h2>
                 <textarea
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
@@ -270,9 +276,9 @@ export default function CreatePostPage() {
 
               {/* 태그 */}
               <LinearCard padding="lg" shadow="sm">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
+                <h2 className="text-lg font-semibold mb-4 flex items-center text-gray-900">
                   <TagIcon className="w-5 h-5 mr-2 text-blue-600" />
-                  태그 (선택사항)
+                  <span className="text-gray-900">태그 (선택사항)</span>
                 </h2>
                 
                 <div className="flex items-center space-x-2 mb-4">
@@ -289,9 +295,10 @@ export default function CreatePostPage() {
                     variant="outline"
                     onClick={addTag}
                     disabled={!currentTag.trim() || formData.tags.length >= 10}
+                    className="border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                   >
                     <PlusIcon className="w-4 h-4 mr-1" />
-                    추가
+                    <span className="text-gray-700">추가</span>
                   </LinearButton>
                 </div>
 
@@ -333,16 +340,17 @@ export default function CreatePostPage() {
                   variant="outline"
                   onClick={() => router.back()}
                   disabled={isSubmitting}
+                  className="border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                 >
-                  취소
+                  <span className="text-gray-700">취소</span>
                 </LinearButton>
                 <LinearButton
                   type="submit"
                   variant="primary"
                   disabled={isSubmitting}
-                  className="px-8"
+                  className="px-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700"
                 >
-                  {isSubmitting ? '작성 중...' : '게시글 작성'}
+                  <span className="text-white">{isSubmitting ? '작성 중...' : '게시글 작성'}</span>
                 </LinearButton>
               </div>
             </form>
