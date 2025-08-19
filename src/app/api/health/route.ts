@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    // Test Supabase connection
+    // Test Supabase connection using pain_points table
     const { data, error } = await supabase
-      .from('users')
+      .from('pain_points')
       .select('id')
       .limit(1);
     
