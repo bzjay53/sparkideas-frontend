@@ -110,6 +110,8 @@ function DashboardSkeleton() {
 function DashboardContent({ isDemo }: { isDemo: boolean }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [collecting, setCollecting] = useState(false);
+  const [collectionStatus, setCollectionStatus] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,6 +122,47 @@ function DashboardContent({ isDemo }: { isDemo: boolean }) {
     
     fetchData();
   }, [isDemo]);
+
+  const handleCollectPainPoints = async () => {
+    if (isDemo) {
+      alert('데모 모드에서는 실제 데이터 수집이 제한됩니다. 로그인 후 이용해주세요.');
+      return;
+    }
+
+    setCollecting(true);
+    setCollectionStatus('Reddit에서 갈증포인트 수집 중...');
+
+    try {
+      const response = await fetch('/api/collect-painpoints', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ limit: 10, saveToDatabase: true }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setCollectionStatus(`✅ ${result.data.stats.totalCollected}개 갈증포인트 수집 완료!`);
+        
+        // 대시보드 데이터 새로고침
+        setTimeout(async () => {
+          const refreshedData = await getDashboardData(false);
+          setData(refreshedData);
+          setCollectionStatus('');
+        }, 2000);
+      } else {
+        setCollectionStatus(`❌ 수집 실패: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Collection failed:', error);
+      setCollectionStatus('❌ 수집 중 오류가 발생했습니다.');
+    } finally {
+      setCollecting(false);
+      setTimeout(() => setCollectionStatus(''), 5000);
+    }
+  };
 
   if (loading || !data) {
     return <DashboardSkeleton />;
@@ -255,13 +298,41 @@ function DashboardContent({ isDemo }: { isDemo: boolean }) {
       {/* Quick Actions */}
       <LinearCard padding="lg" shadow="md">
         <h2 className="text-lg font-semibold mb-4">빠른 작업</h2>
+        
+        {/* Collection Status */}
+        {collectionStatus && (
+          <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+            collectionStatus.includes('✅') 
+              ? 'bg-green-50 text-green-800 border border-green-200' 
+              : collectionStatus.includes('❌')
+              ? 'bg-red-50 text-red-800 border border-red-200'
+              : 'bg-blue-50 text-blue-800 border border-blue-200'
+          }`}>
+            {collectionStatus}
+          </div>
+        )}
+        
         <div className="flex flex-wrap gap-3">
           <LinearButton 
             variant="primary" 
             size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700 font-medium"
+            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700 font-medium ${
+              collecting ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={handleCollectPainPoints}
+            disabled={collecting}
           >
-            <span className="text-white">새 데이터 수집 시작</span>
+            {collecting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                수집 중...
+              </>
+            ) : (
+              <span className="text-white">새 데이터 수집 시작</span>
+            )}
           </LinearButton>
           <LinearButton variant="secondary" size="sm">
             AI 분석 실행

@@ -10,6 +10,109 @@ export default function PRDViewerPage() {
   const params = useParams();
   const router = useRouter();
 
+  const handleDownloadPRD = () => {
+    // PRD 내용을 HTML로 가져오기
+    const prdContent = document.querySelector('.container')?.innerHTML;
+    
+    if (!prdContent) {
+      alert('PRD 내용을 찾을 수 없습니다.');
+      return;
+    }
+
+    // HTML 문서 생성
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 기반 스마트 쇼핑 추천 앱 - PRD</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e5e5;
+        }
+        h1 { color: #1e40af; font-size: 2.5em; margin-bottom: 10px; }
+        h2 { color: #1e40af; font-size: 1.8em; margin-top: 30px; margin-bottom: 15px; }
+        h3 { color: #374151; font-size: 1.3em; margin-top: 20px; margin-bottom: 10px; }
+        .highlight { background-color: #dbeafe; padding: 20px; border-left: 4px solid #3b82f6; margin: 20px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .metric { text-align: center; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #059669; }
+        .footer { margin-top: 50px; text-align: center; font-size: 0.9em; color: #6b7280; }
+        @media print { body { max-width: none; margin: 0; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI 기반 스마트 쇼핑 추천 앱</h1>
+        <p>Product Requirements Document (PRD)</p>
+        <p><strong>생성일:</strong> ${new Date().toLocaleDateString('ko-KR')} | <strong>신뢰도:</strong> 92% | <strong>PRD ID:</strong> ${params.id}</p>
+    </div>
+    ${prdContent}
+    <div class="footer">
+        <p>© 2025 IdeaSpark - AI 기반 비즈니스 아이디어 플랫폼</p>
+        <p>이 문서는 IdeaSpark에서 자동 생성되었습니다.</p>
+    </div>
+</body>
+</html>`;
+
+    // 파일 다운로드
+    const blob = new Blob([htmlContent], { type: 'text/html; charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PRD_AI_스마트쇼핑앱_${params.id}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSharePRD = async () => {
+    const currentUrl = window.location.href;
+    
+    // Web Share API 지원 확인
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'AI 기반 스마트 쇼핑 추천 앱 - PRD',
+          text: 'IdeaSpark에서 생성된 PRD를 확인해보세요',
+          url: currentUrl,
+        });
+      } catch (error) {
+        // 공유가 취소된 경우 무시
+        console.log('Share cancelled');
+      }
+    } else {
+      // Web Share API 미지원시 클립보드에 복사
+      try {
+        await navigator.clipboard.writeText(currentUrl);
+        alert('PRD 링크가 클립보드에 복사되었습니다!');
+      } catch (error) {
+        // 클립보드 복사 실패시 선택 가능한 텍스트 표시
+        const textArea = document.createElement('textarea');
+        textArea.value = currentUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('PRD 링크가 복사되었습니다!');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
         <div className="bg-white shadow-sm border-b">
@@ -26,6 +129,7 @@ export default function PRDViewerPage() {
                   variant="outline" 
                   size="sm"
                   className="border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 font-medium"
+                  onClick={handleSharePRD}
                 >
                   <ShareIcon className="w-4 h-4 mr-1" />
                   <span className="text-gray-700">공유</span>
@@ -34,6 +138,7 @@ export default function PRDViewerPage() {
                   variant="outline" 
                   size="sm"
                   className="border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 font-medium"
+                  onClick={handleDownloadPRD}
                 >
                   <ArrowDownTrayIcon className="w-4 h-4 mr-1" />
                   <span className="text-gray-700">다운로드</span>
