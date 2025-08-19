@@ -18,7 +18,7 @@ export class PainPointService {
     const { data, error } = await supabase
       .from('pain_points')
       .select('*')
-      .order('collected_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(limit);
     
     if (error) throw error;
@@ -30,7 +30,7 @@ export class PainPointService {
       .from('pain_points')
       .select('*')
       .eq('source', source)
-      .order('collected_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(limit);
     
     if (error) throw error;
@@ -42,8 +42,8 @@ export class PainPointService {
       const { data, error } = await supabase
         .from('pain_points')
         .select('*')
-        .order('trend_score', { ascending: false })
         .order('sentiment_score', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(limit);
       
       if (error) throw error;
