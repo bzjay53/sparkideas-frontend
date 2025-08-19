@@ -117,6 +117,9 @@ class RedditAuthManager {
       // 토큰은 보통 1시간 유효, 안전하게 50분으로 설정
       this.tokenExpiryTime = Date.now() + (50 * 60 * 1000);
 
+      if (!this.accessToken) {
+        throw ErrorFactory.externalApi('Reddit', 'Failed to obtain access token');
+      }
       return this.accessToken;
     } catch (error) {
       if (error instanceof AppError) {

@@ -447,7 +447,7 @@ export class TelegramService {
           summary: {
             totalIdeas: ideas.length,
             avgConfidence: Math.round(ideas.reduce((acc: number, idea: any) => acc + (idea.confidence_score || 0), 0) / ideas.length),
-            topCategories: CATEGORIES.DEFAULT_TOP_CATEGORIES
+            topCategories: [...CATEGORIES.DEFAULT_TOP_CATEGORIES]
           }
         };
       }
@@ -581,5 +581,7 @@ export class TelegramService {
 // 기존 메서드들을 위한 호환성 유지
 export const telegramService = new TelegramService();
 
-// formatDailyDigest 메서드 호환성
-telegramService.formatDailyDigest = TelegramTemplateManager.formatDailyDigest;
+// TelegramTemplateManager를 외부에서 사용할 수 있도록 export
+export { TelegramTemplateManager };
+
+// formatDailyDigest 메서드는 TelegramTemplateManager.formatDailyDigest로 직접 사용

@@ -42,15 +42,15 @@ export async function POST(request: NextRequest) {
 
     // 입력 검증
     if (!title || !description) {
-      throw ErrorFactory.validation('Title and description are required');
+      throw ErrorFactory.badRequest('Title and description are required');
     }
 
     if (title.length < 5 || title.length > 200) {
-      throw ErrorFactory.validation('Title must be between 5 and 200 characters');
+      throw ErrorFactory.badRequest('Title must be between 5 and 200 characters');
     }
 
     if (description.length < 20 || description.length > 1000) {
-      throw ErrorFactory.validation('Description must be between 20 and 1000 characters');
+      throw ErrorFactory.badRequest('Description must be between 20 and 1000 characters');
     }
 
     // PRD 생성을 위한 AI 프롬프트 구성
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!aiResponse) {
-      throw ErrorFactory.externalAPI('Failed to generate PRD from AI service');
+      throw ErrorFactory.externalApi('OpenAI', 'Failed to generate PRD from AI service');
     }
 
     // AI 응답 파싱 및 구조화
@@ -104,14 +104,14 @@ export async function POST(request: NextRequest) {
     console.error('Error generating PRD:', error);
     
     if (error instanceof AppError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code), { 
+      return NextResponse.json(createErrorResponse(error.message, error.statusCode), { 
         status: error.statusCode 
       });
     }
 
     return NextResponse.json(createErrorResponse(
       'Failed to generate PRD', 
-      'PRD_GENERATION_ERROR'
+      500
     ), { status: 500 });
   }
 }
@@ -129,8 +129,8 @@ You are an expert product manager creating a comprehensive PRD. Generate a detai
 - **Description**: ${description}
 - **Target Market**: ${target_market || 'General market'}
 - **Template Type**: ${template_type}
-- **Key Features**: ${key_features.length > 0 ? key_features.join(', ') : 'Not specified'}
-- **Constraints**: ${constraints.length > 0 ? constraints.join(', ') : 'None specified'}
+- **Key Features**: ${key_features && key_features.length > 0 ? key_features.join(', ') : 'Not specified'}
+- **Constraints**: ${constraints && constraints.length > 0 ? constraints.join(', ') : 'None specified'}
 
 ## Required PRD Structure
 

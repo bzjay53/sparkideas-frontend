@@ -550,6 +550,34 @@ export class OpenAIService {
   /**
    * 서비스 연결 상태 테스트
    */
+  /**
+   * 구조화된 응답을 생성하는 범용 메서드
+   * PRD, 보고서 등 복잡한 문서 생성용
+   */
+  async generateStructuredResponse(
+    prompt: string, 
+    options?: { temperature?: number; maxTokens?: number }
+  ): Promise<string> {
+    const systemPrompt = "You are a professional technical writer and business analyst. Generate comprehensive, well-structured responses in Korean.";
+    
+    try {
+      const result = await this.client.callChatCompletion(systemPrompt, prompt, {
+        temperature: options?.temperature || 0.7,
+        maxTokens: options?.maxTokens || 4000
+      });
+      
+      if (!result.success || !result.content) {
+        throw ErrorFactory.externalApi('OpenAI', 'Failed to generate structured response');
+      }
+      
+      return result.content;
+    } catch (error) {
+      const errorInstance = error instanceof Error ? error : new Error(String(error));
+      ErrorLogger.log(errorInstance, 'OpenAIService.generateStructuredResponse');
+      throw ErrorFactory.externalApi('OpenAI', 'Structured response generation failed', errorInstance);
+    }
+  }
+
   async testConnection(): Promise<{ success: boolean; message: string; details?: any }> {
     try {
       const result = await this.client.callChatCompletion(

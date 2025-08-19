@@ -249,15 +249,15 @@ export class ErrorLogger {
    * 에러를 적절한 수준으로 로깅
    */
   static log(error: AppError | Error, requestId?: string): void {
-    const errorInfo = {
-      timestamp: new Date().toISOString(),
-      requestId,
-      ...(error instanceof AppError ? error.toJSON() : {
+    const errorInfo = error instanceof AppError ? 
+      error.toJSON() : 
+      {
         name: error.name,
         message: error.message,
-        stack: error.stack
-      })
-    };
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+        requestId
+      };
 
     // 심각도에 따른 로깅 레벨 결정
     if (error instanceof AppError) {

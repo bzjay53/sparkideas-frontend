@@ -95,14 +95,14 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching community posts:', error);
     
     if (error instanceof AppError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code), { 
+      return NextResponse.json(createErrorResponse(error.message, error.statusCode), { 
         status: error.statusCode 
       });
     }
 
     return NextResponse.json(createErrorResponse(
       'Failed to fetch community posts', 
-      'COMMUNITY_FETCH_ERROR'
+      500
     ), { status: 500 });
   }
 }
@@ -115,20 +115,20 @@ export async function POST(request: NextRequest) {
 
     // 입력 검증
     if (!title || !content || !category) {
-      throw ErrorFactory.validation('Title, content, and category are required');
+      throw ErrorFactory.badRequest('Title, content, and category are required');
     }
 
     if (title.length < 5 || title.length > 200) {
-      throw ErrorFactory.validation('Title must be between 5 and 200 characters');
+      throw ErrorFactory.badRequest('Title must be between 5 and 200 characters');
     }
 
     if (content.length < 20 || content.length > 5000) {
-      throw ErrorFactory.validation('Content must be between 20 and 5000 characters');
+      throw ErrorFactory.badRequest('Content must be between 20 and 5000 characters');
     }
 
     const validCategories = ['자랑', '공유', '외주', '협업'];
     if (!validCategories.includes(category)) {
-      throw ErrorFactory.validation(`Category must be one of: ${validCategories.join(', ')}`);
+      throw ErrorFactory.badRequest(`Category must be one of: ${validCategories.join(', ')}`);
     }
 
     // TODO: 실제 인증된 사용자 ID를 가져와야 함
@@ -171,14 +171,14 @@ export async function POST(request: NextRequest) {
     console.error('Error creating community post:', error);
     
     if (error instanceof AppError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code), { 
+      return NextResponse.json(createErrorResponse(error.message, error.statusCode), { 
         status: error.statusCode 
       });
     }
 
     return NextResponse.json(createErrorResponse(
       'Failed to create community post', 
-      'COMMUNITY_CREATE_ERROR'
+      500
     ), { status: 500 });
   }
 }

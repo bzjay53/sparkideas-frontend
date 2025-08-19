@@ -8,22 +8,22 @@
  */
 export const COLLECTION_LIMITS = {
   /** 기본 갈증포인트 수집 개수 */
-  PAIN_POINTS_DEFAULT: 10,
+  PAIN_POINTS_DEFAULT: 10 as number,
   /** 크론 작업용 갈증포인트 수집 개수 */
-  PAIN_POINTS_CRON: 20,
+  PAIN_POINTS_CRON: 20 as number,
   /** 최대 갈증포인트 수집 개수 */
-  PAIN_POINTS_MAX: 50,
+  PAIN_POINTS_MAX: 50 as number,
   /** 일일 AI 아이디어 생성 개수 */
-  IDEAS_DAILY: 5,
+  IDEAS_DAILY: 5 as number,
   /** 비즈니스 아이디어 상위 개수 */
-  IDEAS_TOP_COUNT: 5,
+  IDEAS_TOP_COUNT: 5 as number,
   /** 트렌딩 갈증포인트 개수 */
-  TRENDING_PAIN_POINTS: 10,
+  TRENDING_PAIN_POINTS: 10 as number,
   /** 대시보드 표시용 상위 아이디어 개수 */
-  DASHBOARD_TOP_IDEAS: 3,
+  DASHBOARD_TOP_IDEAS: 3 as number,
   /** 대시보드 표시용 트렌딩 갈증포인트 개수 */
-  DASHBOARD_TRENDING_POINTS: 5,
-} as const;
+  DASHBOARD_TRENDING_POINTS: 5 as number,
+};
 
 /**
  * 캐시 관련 상수 (초 단위)

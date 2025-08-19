@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { telegramService } from '@/lib/telegram-service';
+import { telegramService, TelegramTemplateManager } from '@/lib/telegram-service';
 import { supabase } from '@/lib/supabase';
 import { createSuccessResponse, createErrorResponse, type CronTaskResult } from '@/lib/types/api';
 import { handleError } from '@/lib/error-handler';
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
         summary: {
           totalIdeas: ideas.length,
           avgConfidence: Math.round(ideasTask?.data?.avgConfidence || 0),
-          topCategories: CATEGORIES.DEFAULT_TOP_CATEGORIES
+          topCategories: [...CATEGORIES.DEFAULT_TOP_CATEGORIES]
         }
       };
       
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
             chat_id: chatId,
             message_type: 'daily_digest',
             business_idea_ids: ideas.map((idea: any) => idea.id).filter(Boolean),
-            message_content: telegramService.formatDailyDigest(dailyDigest),
+            message_content: TelegramTemplateManager.formatDailyDigest(dailyDigest),
             sent_at: new Date().toISOString(),
             success: true
           });
