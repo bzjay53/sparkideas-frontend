@@ -211,7 +211,7 @@ export default function CommunityPage() {
             <LinearButton 
               variant="primary" 
               size="lg" 
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700"
               onClick={() => window.location.href = '/community/create'}
             >
               <PlusIcon className="w-5 h-5" />

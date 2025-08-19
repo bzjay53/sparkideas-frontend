@@ -259,9 +259,9 @@ function DashboardContent({ isDemo }: { isDemo: boolean }) {
           <LinearButton 
             variant="primary" 
             size="sm" 
-            className="!text-white font-medium"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700 font-medium"
           >
-            새 데이터 수집 시작
+            <span className="text-white">새 데이터 수집 시작</span>
           </LinearButton>
           <LinearButton variant="secondary" size="sm">
             AI 분석 실행
