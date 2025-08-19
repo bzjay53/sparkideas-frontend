@@ -1,13 +1,14 @@
 /**
- * OpenAI API 통합 서비스
- * 비즈니스 아이디어 생성과 NLP 분석을 위한 체계화된 AI 서비스
+ * AI API 통합 서비스 (OpenRouter 기반)
+ * 비즈니스 아이디어 생성과 NLP 분석을 위한 비용 최적화된 AI 서비스
  */
 
 import { 
   AI_CONFIG, 
   API_TIMEOUTS, 
   BUSINESS_IDEA_DEFAULTS,
-  STATUS_MESSAGES 
+  STATUS_MESSAGES,
+  OPENROUTER_MODELS 
 } from '@/lib/constants';
 import { 
   AppError, 
@@ -167,14 +168,29 @@ ${category ? `특히 "${category}" 분야에 초점을 맞춰 주세요.` : ''}
 }
 
 /**
- * OpenAI API 클라이언트 클래스
- * HTTP 통신, 토큰 관리, 에러 처리 담당
+ * OpenRouter AI API 클라이언트 클래스
+ * HTTP 통신, 토큰 관리, 에러 처리, 스마트 모델 선택 담당
  */
 class OpenAIClient {
   private config: OpenAIConfig;
 
   constructor(config: OpenAIConfig) {
     this.config = config;
+  }
+
+  /**
+   * 비용 최적화를 위한 스마트 모델 선택
+   */
+  private selectOptimalModel(taskType: 'standard' | 'creative' | 'fast' = 'standard'): string {
+    switch (taskType) {
+      case 'fast':
+        return OPENROUTER_MODELS.FALLBACK; // 무료 모델
+      case 'creative':
+        return OPENROUTER_MODELS.CREATIVE; // 중간 비용
+      case 'standard':
+      default:
+        return OPENROUTER_MODELS.PRIMARY; // 기본 비용 효율 모델
+    }
   }
 
   /**
@@ -188,6 +204,7 @@ class OpenAIClient {
       temperature: number;
       maxTokens: number;
       timeout: number;
+      taskType: 'standard' | 'creative' | 'fast';
     }>
   ): Promise<OpenAICallResult> {
     const startTime = Date.now();
@@ -197,14 +214,16 @@ class OpenAIClient {
       const timeout = options?.timeout || this.config.timeout;
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://ideaspark-v2.vercel.app',
+          'X-Title': 'IdeaSpark - AI Business Ideas'
         },
         body: JSON.stringify({
-          model: options?.model || this.config.model,
+          model: options?.model || this.selectOptimalModel(options?.taskType),
           messages: [
             {
               role: 'system',

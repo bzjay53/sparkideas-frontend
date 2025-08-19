@@ -90,6 +90,24 @@ export const AI_CONFIG = {
 } as const;
 
 /**
+ * OpenRouter 모델 설정 (비용 최적화)
+ */
+export const OPENROUTER_MODELS = {
+  /** 기본 모델 - 비용 효율적 */
+  PRIMARY: 'openai/gpt-4o-mini',
+  /** 대안 모델 - 더 저렴 */
+  FALLBACK: 'meta-llama/llama-3.1-8b-instruct:free',
+  /** 크리에이티브 모델 - 중간 비용 */
+  CREATIVE: 'anthropic/claude-3-haiku:beta',
+  /** 비용 정보 (1M tokens당 USD) */
+  COSTS: {
+    'openai/gpt-4o-mini': 0.15,
+    'meta-llama/llama-3.1-8b-instruct:free': 0,
+    'anthropic/claude-3-haiku:beta': 0.25,
+  }
+} as const;
+
+/**
  * 텔레그램 봇 메시지 템플릿
  */
 export const TELEGRAM_TEMPLATES = {
