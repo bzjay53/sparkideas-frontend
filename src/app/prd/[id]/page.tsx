@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LinearCard, LinearButton } from '@/components/ui';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import MermaidDiagram from '@/components/prd/MermaidDiagram';
 import { ArrowLeftIcon, ShareIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
@@ -12,8 +11,7 @@ export default function PRDViewerPage() {
   const router = useRouter();
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
         <div className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
@@ -449,6 +447,5 @@ export default function PRDViewerPage() {
           </LinearCard>
         </div>
       </div>
-    </ProtectedRoute>
   );
 }
