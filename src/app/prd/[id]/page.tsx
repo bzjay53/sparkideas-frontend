@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LinearCard, LinearButton } from '@/components/ui';
-import SimpleMermaidRender from '@/components/prd/SimpleMermaidRender';
+import StaticDiagram from '@/components/prd/StaticDiagram';
 import { ArrowLeftIcon, ShareIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 export default function PRDViewerPage() {
@@ -174,165 +174,30 @@ export default function PRDViewerPage() {
             {/* User Journey Diagram */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">사용자 여정 플로우</h2>
-              <SimpleMermaidRender 
+              <StaticDiagram 
+                type="flowchart"
                 title="🔄 사용자 여정 플로우"
                 description="앱 사용자의 주요 기능 흐름도 (복잡도: 4.2/10)"
-                code={`flowchart TD
-    A[앱 시작] --> B{로그인 상태}
-    B -->|로그인됨| C[홈 대시보드]
-    B -->|미로그인| D[로그인/회원가입]
-    D --> C
-    C --> E[AI 추천 보기]
-    C --> F[상품 검색]
-    C --> G[위시리스트]
-    E --> H[상품 상세보기]
-    F --> H
-    G --> H
-    H --> I[장바구니 추가]
-    H --> J[위시리스트 추가]
-    I --> K[결제 진행]
-    J --> G
-    K --> L[주문 완료]
-    L --> M[리뷰 작성]
-    M --> C`}
               />
             </section>
             
             {/* Database Schema */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">데이터베이스 스키마</h2>
-              <SimpleMermaidRender 
+              <StaticDiagram 
+                type="erdiagram"
                 title="🗄️ 데이터베이스 스키마"
                 description="앱의 주요 데이터 모델 관계도 (복잡도: 5.8/10)"
-                code={`erDiagram
-    USER {
-        uuid id PK
-        string email
-        string username
-        string password_hash
-        jsonb preferences
-        datetime created_at
-        datetime updated_at
-    }
-    
-    PRODUCT {
-        uuid id PK
-        string name
-        text description
-        decimal price
-        string category
-        jsonb metadata
-        datetime created_at
-        datetime updated_at
-    }
-    
-    RECOMMENDATION {
-        uuid id PK
-        uuid user_id FK
-        uuid product_id FK
-        float confidence_score
-        string reason
-        datetime recommended_at
-    }
-    
-    WISHLIST {
-        uuid id PK
-        uuid user_id FK
-        uuid product_id FK
-        datetime added_at
-    }
-    
-    ORDER {
-        uuid id PK
-        uuid user_id FK
-        decimal total_amount
-        enum status
-        datetime created_at
-    }
-    
-    ORDER_ITEM {
-        uuid id PK
-        uuid order_id FK
-        uuid product_id FK
-        int quantity
-        decimal unit_price
-    }
-    
-    USER ||--o{ RECOMMENDATION : receives
-    USER ||--o{ WISHLIST : creates
-    USER ||--o{ ORDER : places
-    PRODUCT ||--o{ RECOMMENDATION : recommended
-    PRODUCT ||--o{ WISHLIST : added_to
-    PRODUCT ||--o{ ORDER_ITEM : included_in
-    ORDER ||--o{ ORDER_ITEM : contains`}
               />
             </section>
             
             {/* System Architecture */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">시스템 아키텍처</h2>
-              <SimpleMermaidRender 
+              <StaticDiagram 
+                type="architecture"
                 title="🏗️ 시스템 아키텍처"
                 description="마이크로서비스 기반 시스템 구조도 (복잡도: 7.3/10)"
-                code={`graph TB
-    subgraph "Mobile Apps"
-        iOS[iOS App]
-        Android[Android App]
-    end
-    
-    subgraph "API Gateway"
-        Gateway[API Gateway]
-    end
-    
-    subgraph "Microservices"
-        Auth[Auth Service]
-        Product[Product Service]
-        Recommendation[AI Recommendation Service]
-        Order[Order Service]
-        Notification[Notification Service]
-    end
-    
-    subgraph "AI/ML Platform"
-        MLModel[ML Models]
-        DataPipeline[Data Pipeline]
-        FeatureStore[Feature Store]
-    end
-    
-    subgraph "Databases"
-        UserDB[(User DB)]
-        ProductDB[(Product DB)]
-        OrderDB[(Order DB)]
-        MLData[(ML Data Store)]
-    end
-    
-    subgraph "External APIs"
-        PaymentGW[Payment Gateway]
-        EmailAPI[Email API]
-        PushAPI[Push Notification API]
-        ProductAPI[Product Data APIs]
-    end
-    
-    iOS --> Gateway
-    Android --> Gateway
-    Gateway --> Auth
-    Gateway --> Product
-    Gateway --> Recommendation
-    Gateway --> Order
-    Gateway --> Notification
-    
-    Auth --> UserDB
-    Product --> ProductDB
-    Product --> ProductAPI
-    Order --> OrderDB
-    Order --> PaymentGW
-    Notification --> EmailAPI
-    Notification --> PushAPI
-    
-    Recommendation --> MLModel
-    MLModel --> FeatureStore
-    DataPipeline --> MLData
-    DataPipeline --> ProductDB
-    DataPipeline --> UserDB`}
               />
             </section>
 
