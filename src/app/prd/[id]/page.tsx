@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LinearCard, LinearButton } from '@/components/ui';
-import SimpleMermaidDiagram from '@/components/prd/SimpleMermaidDiagram';
+import CDNMermaidDiagram from '@/components/prd/CDNMermaidDiagram';
 import { ArrowLeftIcon, ShareIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 export default function PRDViewerPage() {
@@ -174,7 +174,7 @@ export default function PRDViewerPage() {
             {/* User Journey Diagram */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">사용자 여정 플로우</h2>
-              <SimpleMermaidDiagram 
+              <CDNMermaidDiagram 
                 title="🔄 사용자 여정 플로우"
                 description="앱 사용자의 주요 기능 흐름도 (복잡도: 4.2/10)"
                 code={`flowchart TD
@@ -201,7 +201,7 @@ export default function PRDViewerPage() {
             {/* Database Schema */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">데이터베이스 스키마</h2>
-              <SimpleMermaidDiagram 
+              <CDNMermaidDiagram 
                 title="🗄️ 데이터베이스 스키마"
                 description="앱의 주요 데이터 모델 관계도 (복잡도: 5.8/10)"
                 code={`erDiagram
@@ -271,7 +271,7 @@ export default function PRDViewerPage() {
             {/* System Architecture */}
             <section className="mb-10">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">시스템 아키텍처</h2>
-              <SimpleMermaidDiagram 
+              <CDNMermaidDiagram 
                 title="🏗️ 시스템 아키텍처"
                 description="마이크로서비스 기반 시스템 구조도 (복잡도: 7.3/10)"
                 code={`graph TB
