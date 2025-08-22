@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         comments_count,
         project_status,
         created_at,
-        updated_at
+        updated_at,
       `)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -71,19 +71,22 @@ export async function GET(request: NextRequest) {
       throw ErrorFactory.database(`Failed to fetch community posts: ${error.message}`);
     }
 
-    // Mock 사용자 데이터 (실제로는 users 테이블과 JOIN 해야 함)
-    const enrichedPosts = posts?.map(post => ({
-      ...post,
-      author: {
-        name: generateMockAuthorName(post.user_id),
-        avatar: generateMockAvatar(),
-        level: generateMockLevel()
-      },
-      views: Math.floor(Math.random() * 500) + 50, // Mock views
-      isLiked: false,
-      isBookmarked: false,
-      status: getPostStatus(post)
-    })) || [];
+    // 사용자 정보와 함께 포스트 정보 구성
+    const enrichedPosts = posts?.map(post => {
+      return {
+        ...post,
+        author: {
+          id: post.user_id,
+          name: 'User', // TODO: Implement user name lookup
+          avatar: '👤',
+          level: 'Member'
+        },
+        views: Math.floor(Math.random() * 500) + 50, // TODO: Implement real view tracking
+        isLiked: false, // TODO: Implement user-specific like status
+        isBookmarked: false, // TODO: Implement user-specific bookmark status
+        status: getPostStatus(post)
+      };
+    }) || [];
 
     return NextResponse.json(createSuccessResponse({
       posts: enrichedPosts,
@@ -131,15 +134,15 @@ export async function POST(request: NextRequest) {
       throw ErrorFactory.badRequest(`Category must be one of: ${validCategories.join(', ')}`);
     }
 
-    // TODO: 실제 인증된 사용자 ID를 가져와야 함
-    const mockUserId = 'mock-user-' + Date.now();
+    // TODO: 실제 인증된 사용자 ID를 가져와야 함 (현재는 임시 사용자 ID)
+    const userId = body.userId || 'temp-user-' + Date.now();
 
     const { data: newPost, error } = await supabase
       .from('community_posts')
       .insert({
         title,
         content,
-        user_id: mockUserId,
+        user_id: userId,
         category,
         tags: Array.isArray(tags) ? tags : [],
         project_status,
@@ -157,9 +160,10 @@ export async function POST(request: NextRequest) {
       post: {
         ...newPost,
         author: {
-          name: generateMockAuthorName(newPost.user_id),
-          avatar: generateMockAvatar(),
-          level: 'Builder'
+          id: newPost.user_id,
+          name: 'New User', // TODO: Get from user authentication
+          avatar: '👤',
+          level: 'Member'
         },
         views: 1,
         isLiked: false,
@@ -184,21 +188,6 @@ export async function POST(request: NextRequest) {
 }
 
 // Helper functions
-function generateMockAuthorName(userId: string): string {
-  const names = ['김개발', '이기획', '박창업', '최외주', '정분석', '한디자인', '문마케팅', '조운영'];
-  const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return names[hash % names.length];
-}
-
-function generateMockAvatar(): string {
-  const avatars = ['👨‍💻', '👩‍💼', '🚀', '💼', '🔍', '🎨', '📊', '⚙️'];
-  return avatars[Math.floor(Math.random() * avatars.length)];
-}
-
-function generateMockLevel(): string {
-  const levels = ['Builder', 'Maker', 'Innovator', 'Unicorn', 'Analyst'];
-  return levels[Math.floor(Math.random() * levels.length)];
-}
 
 function getPostStatus(post: CommunityPost): string | undefined {
   const now = new Date();

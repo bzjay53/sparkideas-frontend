@@ -11,7 +11,9 @@ import {
   EyeIcon,
   CalendarIcon,
   TagIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  PencilIcon,
+  EllipsisVerticalIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
@@ -46,65 +48,40 @@ export default function PostDetailPage() {
   useEffect(() => {
     const loadPost = async () => {
       try {
-        // Mock post data - replace with actual API call
-        const mockPost: Post = {
-          id: postId,
-          title: '🚀 AI 쇼핑 추천 앱 MVP 완성! 피드백 구합니다',
-          content: `IdeaSpark에서 생성한 PRD를 바탕으로 3주 만에 MVP를 완성했습니다. 
+        setLoading(true);
+        
+        const response = await fetch(`/api/community/posts/${postId}`);
+        const result = await response.json();
 
-**주요 기능:**
-- 개인화된 추천 알고리즘 (머신러닝 기반)
-- 실시간 가격 비교 기능
-- 사용자 리뷰 분석 및 요약
-- 위시리스트 및 알림 기능
+        if (result.success && result.data?.post) {
+          const apiPost = result.data.post;
+          
+          // API 응답을 frontend 형태로 변환
+          const transformedPost: Post = {
+            id: apiPost.id,
+            title: apiPost.title,
+            content: apiPost.content,
+            author: apiPost.author,
+            category: apiPost.category,
+            tags: apiPost.tags || [],
+            likes: apiPost.likes_count || 0,
+            comments: apiPost.comments_count || 0,
+            views: apiPost.views || 0,
+            created_at: apiPost.created_at,
+            isLiked: apiPost.isLiked || false,
+            isBookmarked: apiPost.isBookmarked || false,
+            status: apiPost.status
+          };
 
-**기술 스택:**
-- Frontend: React Native (iOS/Android 동시 지원)
-- Backend: Node.js + Express + MongoDB
-- AI/ML: Python + TensorFlow + 협업 필터링
-- Infrastructure: AWS EC2 + S3 + CloudFront
-
-**현재 상태:**
-✅ 기본 추천 시스템 구현 완료
-✅ 사용자 인증 및 프로필 관리
-✅ 상품 검색 및 필터링
-🔄 추천 정확도 개선 중 (현재 78%)
-🔄 UI/UX 최적화 진행 중
-
-**피드백 요청 사항:**
-1. 추천 알고리즘의 정확도를 높일 수 있는 방법
-2. 사용자 경험 개선을 위한 UI 제안
-3. 마케팅 및 사용자 획득 전략
-
-현재 베타 테스터를 모집하고 있습니다. 관심 있으신 분들은 댓글로 연락 부탁드립니다!
-
-**데모:** https://shopping-ai-demo.vercel.app
-**GitHub:** https://github.com/username/shopping-ai-app
-
-많은 피드백 부탁드립니다! 🙏`,
-          author: {
-            id: 'user_001',
-            name: '김개발',
-            avatar: '👨‍💻',
-            level: 'Maker'
-          },
-          category: 'showcase',
-          tags: ['자랑', 'MVP', 'AI', '쇼핑', 'React Native', 'Machine Learning'],
-          likes: 42,
-          comments: 18,
-          views: 234,
-          created_at: '2025-08-16T09:30:00Z',
-          isLiked: false,
-          isBookmarked: true,
-          status: 'hot'
-        };
-
-        setTimeout(() => {
-          setPost(mockPost);
-          setLoading(false);
-        }, 500);
+          setPost(transformedPost);
+        } else {
+          console.error('Failed to load post:', result.error);
+          setPost(null);
+        }
       } catch (error) {
         console.error('Failed to load post:', error);
+        setPost(null);
+      } finally {
         setLoading(false);
       }
     };
@@ -114,23 +91,67 @@ export default function PostDetailPage() {
     }
   }, [postId]);
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (!post) return;
     
-    setPost({
-      ...post,
-      isLiked: !post.isLiked,
-      likes: post.isLiked ? post.likes - 1 : post.likes + 1
-    });
+    try {
+      const action = post.isLiked ? 'unlike' : 'like';
+      const response = await fetch(`/api/community/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 'temp-user-id', // TODO: Get actual user ID from auth
+          action
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setPost({
+          ...post,
+          isLiked: result.data.isLiked,
+          likes: result.data.likesCount
+        });
+      } else {
+        console.error('Failed to toggle like:', result.error);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
   };
 
-  const handleBookmark = () => {
+  const handleBookmark = async () => {
     if (!post) return;
     
-    setPost({
-      ...post,
-      isBookmarked: !post.isBookmarked
-    });
+    try {
+      const action = post.isBookmarked ? 'unbookmark' : 'bookmark';
+      const response = await fetch(`/api/community/posts/${postId}/bookmark`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 'temp-user-id', // TODO: Get actual user ID from auth
+          action
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setPost({
+          ...post,
+          isBookmarked: result.data.isBookmarked
+        });
+      } else {
+        console.error('Failed to toggle bookmark:', result.error);
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    }
   };
 
   const handleShare = async () => {
@@ -254,6 +275,21 @@ export default function PostDetailPage() {
               <span className={`px-3 py-1 text-sm font-medium rounded-full ${categoryInfo.color}`}>
                 {categoryInfo.icon} {categoryInfo.name}
               </span>
+              
+              {/* TODO: 작성자만 보이도록 권한 체크 */}
+              <div className="relative group">
+                <button className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                  <EllipsisVerticalIcon className="w-5 h-5" />
+                </button>
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                  <Link href={`/community/posts/${post.id}/edit`}>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
+                      <PencilIcon className="w-4 h-4" />
+                      <span>수정하기</span>
+                    </button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 

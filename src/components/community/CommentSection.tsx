@@ -69,44 +69,43 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     if (!content.trim()) return;
 
     try {
-      // Mock comment creation
-      const newCommentData: Comment = {
-        id: `comment_${Date.now()}`,
-        content: content.trim(),
-        author: {
-          id: 'user_current',
-          name: '현재사용자',
-          avatar: '👤',
-          level: 'Member'
+      const response = await fetch('/api/community/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        post_id: postId,
-        parent_id: parentId,
-        likes: 0,
-        replies_count: 0,
-        is_liked: false,
-        is_edited: false,
-        created_at: new Date().toISOString(),
-        replies: []
-      };
+        body: JSON.stringify({
+          postId,
+          content: content.trim(),
+          parentId,
+          userId: 'temp-user-id' // TODO: Get actual user ID from auth
+        })
+      });
 
-      if (parentId) {
-        // Add as reply
-        setComments(prevComments => 
-          prevComments.map(comment => 
-            comment.id === parentId 
-              ? { 
-                  ...comment, 
-                  replies: [...comment.replies, newCommentData],
-                  replies_count: comment.replies_count + 1
-                }
-              : comment
-          )
-        );
-        setReplyingTo(null);
+      if (response.ok) {
+        const newComment: Comment = await response.json();
+        
+        if (parentId) {
+          // Add as reply
+          setComments(prevComments => 
+            prevComments.map(comment => 
+              comment.id === parentId 
+                ? { 
+                    ...comment, 
+                    replies: [...comment.replies, newComment],
+                    replies_count: comment.replies_count + 1
+                  }
+                : comment
+            )
+          );
+          setReplyingTo(null);
+        } else {
+          // Add as top-level comment
+          setComments(prevComments => [newComment, ...prevComments]);
+          setNewComment('');
+        }
       } else {
-        // Add as top-level comment
-        setComments(prevComments => [newCommentData, ...prevComments]);
-        setNewComment('');
+        console.error('Failed to create comment');
       }
     } catch (error) {
       console.error('Failed to submit comment:', error);
